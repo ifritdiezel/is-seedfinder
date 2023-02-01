@@ -1,20 +1,46 @@
-# Shattered Pixel Dungeon
+# IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
 
-A Roguelike RPG, with randomly generated levels, items, enemies, and traps! Based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).
+It can also display items found on a specific seed.
 
-Shattered Pixel Dungeon currently compiles for Android, iOS and Desktop platforms. It is available from [Google Play](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon), [the App Store](https://apps.apple.com/app/shattered-pixel-dungeon/id1563121109), and right here on [GitHub](https://github.com/00-Evan/shattered-pixel-dungeon/releases).
+New feature summary:
+- Specify the seed to start scanning with. Can be used to continue scanning after terminating the application or to run multiple instances to make use of multiple threads
+- Specify final seed to stop at, useful for running multiple instances
+- Skips every boss floor to slightly improve performance
 
-If you like this game, please consider [supporting me on Patreon](https://www.patreon.com/ShatteredPixel)!
+# How to use
 
-There is an official blog for this project at [ShatteredPixel.com](https://www.shatteredpixel.com).
+## Seed display mode
 
-The game also has a translation project hosted on [Transifex](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
+If no more than two arguments are provided, the items found in a given seed will be printed on the screen:
 
-Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
+```
+java -jar seed-finder.jar floors seed
+```
 
-If you'd like to work with the code, you can find the following guides in `/docs`:
-- [Compiling for Android.](docs/getting-started-android.md)
-    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
-- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
-- [Compiling for iOS.](docs/getting-started-ios.md)
-- [Recommended changes for making your own mod.](docs/recommended-changes.md)
+- **floors**: maximum depth to display
+- **seed**: dungeon seed to analyze
+
+## Finder mode
+
+If al least 3 arguments are provided, the application will try to find a specific seed:
+
+```
+java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending seed]
+```
+
+- **floors**: maximum depth to look for the items
+- **condition**: can be either `any` or `all`: the first will consider a seed valid if any of the specified items has been found, the second one requires _all_ of the items to spawn instead
+- **item_list**: file name containing a list of items, one item per line
+- **output_file**: file name to save the item list for each seed
+- **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
+- **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
+
+The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
+
+The application will run until the set final seed is scanned or all the seeds have been tested by default (virtually indefinitely), so stop it using ctrl-C when you have found enough seeds for your needs.
+
+Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
+
+# How to build
+The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release
