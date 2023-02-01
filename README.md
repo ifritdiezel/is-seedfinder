@@ -43,4 +43,5 @@ The application will run until the set final seed is scanned or all the seeds ha
 Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
 
 # How to build
-The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release
+The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release. 
+A modified [patch](https://github.com/ifritdiezel/is-seedfinder/blob/master/is-seedfinder.patch) to apply to an existing project is also available in the root directory.
