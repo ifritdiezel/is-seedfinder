@@ -45,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -65,7 +64,11 @@ public class Heap implements Bundlable {
 		CRYSTAL_CHEST,
 		TOMB,
 		SKELETON,
-		REMAINS
+		REMAINS,
+		MIMIC,
+		GOLDEN_MIMIC,
+		CRYSTAL_MIMIC,
+		STATUE
 	}
 	public Type type = Type.HEAP;
 	
@@ -369,6 +372,14 @@ public class Heap implements Bundlable {
 				return Messages.get(this, "skeleton");
 			case REMAINS:
 				return Messages.get(this, "remains");
+			case MIMIC:
+				return "mimic";
+			case GOLDEN_MIMIC:
+				return "golden mimic";
+			case CRYSTAL_MIMIC:
+				return "crystal mimic";
+			case STATUE:
+				return "statue";
 			default:
 				return peek().title();
 		}

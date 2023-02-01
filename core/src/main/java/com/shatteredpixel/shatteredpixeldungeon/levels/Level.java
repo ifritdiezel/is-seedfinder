@@ -100,7 +100,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public abstract class Level implements Bundlable {
+public abstract class  Level implements Bundlable {
 	
 	public static enum Feeling {
 		NONE,
