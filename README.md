@@ -36,7 +36,7 @@ java -jar seed-finder.jar floors condition item_list output_file [starting_seed]
 - **output_file**: file name to save the item list for each seed
 - **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
 - **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
-- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
+- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console. if this contains r, enable forbidden runes
 
 The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
 

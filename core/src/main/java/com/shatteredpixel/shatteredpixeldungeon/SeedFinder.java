@@ -62,6 +62,7 @@ public class SeedFinder {
 		public static long endingSeed;
 
 		public static boolean quietMode;
+		public static boolean runesOn;
 	}
 
 
@@ -103,6 +104,7 @@ public class SeedFinder {
 		else
 			Options.endingSeed = Long.parseLong((args[5]));
 			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flag
+			Options.runesOn = args[args.length-1].contains("r");
 	}
 
 	private ArrayList<String> getItemList() {
@@ -171,7 +173,6 @@ public class SeedFinder {
 		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
 		if (args.length == 2 || args.length == 3) {
 			logSeedItems(Long.toString(Options.seed), Options.floors);
-
 			return;
 		}
 
@@ -233,6 +234,7 @@ public class SeedFinder {
 
 	private boolean testSeed(String seed, int floors) {
 		SPDSettings.customSeed(seed);
+		if (Options.runesOn) SPDSettings.challenges(64); else SPDSettings.challenges(0);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
 
