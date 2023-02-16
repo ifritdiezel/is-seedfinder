@@ -15,18 +15,19 @@ New feature summary:
 If no more than two arguments are provided, the items found in a given seed will be printed on the screen:
 
 ```
-java -jar seed-finder.jar floors seed
+java -jar seed-finder.jar floors seed [output_file]
 ```
 
 - **floors**: maximum depth to display
 - **seed**: dungeon seed to analyze
+- **output_file**: if specified, scan results will be written to this file instead of console
 
 ## Finder mode
 
 If al least 3 arguments are provided, the application will try to find a specific seed:
 
 ```
-java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending seed]
+java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending_seed] [option_flags]
 ```
 
 - **floors**: maximum depth to look for the items
@@ -35,6 +36,7 @@ java -jar seed-finder.jar floors condition item_list output_file [starting_seed]
 - **output_file**: file name to save the item list for each seed
 - **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
 - **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
+- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
 
 The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
 
