@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class SeedFinder {
@@ -79,11 +80,11 @@ public class SeedFinder {
 
 	// TODO: make it parse the item list directly from the arguments
 	private void parseArgs(String[] args) {
-		if (args.length == 2) {
+		if (args.length == 2 || args.length == 3) {
 			Options.outputFile = "stdout";
 			Options.floors = Integer.parseInt(args[0]);
 			Options.seed = DungeonSeed.convertFromText(args[1]);
-
+			if (args.length == 3) Options.outputFile = args[2];
 			return;
 		}
 
@@ -101,8 +102,7 @@ public class SeedFinder {
 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
 		else
 			Options.endingSeed = Long.parseLong((args[5]));
-
-		Options.quietMode = args[args.length-1].contains("q");
+			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flag
 	}
 
 	private ArrayList<String> getItemList() {
@@ -167,10 +167,9 @@ public class SeedFinder {
 	}
 
     public SeedFinder(String[] args) {
-		if (!Options.quietMode) System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
 		parseArgs(args);
-
-		if (args.length == 2) {
+		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+		if (args.length == 2 || args.length == 3) {
 			logSeedItems(Long.toString(Options.seed), Options.floors);
 
 			return;
@@ -325,9 +324,7 @@ public class SeedFinder {
 		OutputStream out_fd = System.out;
 
 		try {
-			if (Options.outputFile != "stdout")
-				out_fd = new FileOutputStream(Options.outputFile, true);
-
+			if (!Objects.equals(Options.outputFile, "stdout")) out_fd = new FileOutputStream(Options.outputFile, false);
 			out = new PrintWriter(out_fd);
 		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
 			e.printStackTrace();
