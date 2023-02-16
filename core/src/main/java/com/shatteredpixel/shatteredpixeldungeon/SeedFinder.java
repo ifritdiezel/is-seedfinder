@@ -23,7 +23,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -56,11 +55,14 @@ public class SeedFinder {
 		public static int floors;
 		public static Condition condition;
 		public static String itemListFile;
-		public static String ouputFile;
+		public static String outputFile;
 		public static long seed;
-		public static int startingSeed;
+		public static long startingSeed;
 		public static long endingSeed;
+
+		public static boolean quietMode;
 	}
+
 
 	public class HeapItem {
 		public Item item;
@@ -78,28 +80,29 @@ public class SeedFinder {
 	// TODO: make it parse the item list directly from the arguments
 	private void parseArgs(String[] args) {
 		if (args.length == 2) {
-			Options.ouputFile = "stdout";
+			Options.outputFile = "stdout";
 			Options.floors = Integer.parseInt(args[0]);
 			Options.seed = DungeonSeed.convertFromText(args[1]);
 
-			return;			
+			return;
 		}
 
 		Options.floors = Integer.parseInt(args[0]);
 		Options.condition = args[1].equals("any") ? Condition.ANY : Condition.ALL;
 		Options.itemListFile = args[2];
-		Options.ouputFile = args[3];
+		Options.outputFile = args[3];
 
 		if (args.length < 5)
 			Options.startingSeed = 0;
 		else
-			Options.startingSeed = Integer.parseInt((args[4]));
+			Options.startingSeed = Long.parseLong((args[4]));
 
 		if (args.length < 6)
 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
 		else
-			Options.endingSeed = Integer.parseInt((args[5]));
+			Options.endingSeed = Long.parseLong((args[5]));
 
+		Options.quietMode = args[args.length-1].contains("q");
 	}
 
 	private ArrayList<String> getItemList() {
@@ -149,14 +152,14 @@ public class SeedFinder {
 
 	private void addTextQuest(String caption, ArrayList<Item> items, StringBuilder builder) {
 		if (!items.isEmpty()) {
-			builder.append(caption + ":\n");
+			builder.append(caption).append(":\n");
 
 			for (Item i : items) {
 				if (i.cursed)
-					builder.append("- cursed " + i.title().toLowerCase() + "\n");
+					builder.append("- cursed ").append(i.title().toLowerCase()).append("\n");
 
 				else
-					builder.append("- " + i.title().toLowerCase() + "\n");
+					builder.append("- ").append(i.title().toLowerCase()).append("\n");
 			}
 
 			builder.append("\n");
@@ -164,7 +167,7 @@ public class SeedFinder {
 	}
 
     public SeedFinder(String[] args) {
-		System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+		if (!Options.quietMode) System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
 		parseArgs(args);
 
 		if (args.length == 2) {
@@ -176,16 +179,17 @@ public class SeedFinder {
 		itemList = getItemList();
 
 		try {
-			Writer outputFile = new FileWriter(Options.ouputFile);
+			Writer outputFile = new FileWriter(Options.outputFile);
 			outputFile.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		for (int i = Options.startingSeed; i < Options.endingSeed; i++) {
-			if (testSeed(Integer.toString(i), Options.floors)) {
-				System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
-				logSeedItems(Integer.toString(i), Options.floors);
+		for (long i = Options.startingSeed; i < Options.endingSeed; i++) {
+			if (testSeed(Long.toString(i), Options.floors)) {
+				logSeedItems(Long.toString(i), Options.floors);
+				if (Options.quietMode) System.out.print(DungeonSeed.convertToCode(Dungeon.seed));
+				else System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 			}
 		}
 	}
@@ -238,7 +242,22 @@ public class SeedFinder {
 		for (int i = 0; i < floors; i++) {
 			Level l = Dungeon.newLevel();
 
+
+
 			if(Dungeon.depth % 5 != 0) {
+				ArrayList<Item> rewards = getPossibleQuestRewards(l);
+				for (Item item : rewards) {
+					item.identify();
+
+					for (int j = 0; j < itemList.size(); j++) {
+						if (item.title().toLowerCase().contains(itemList.get(j))) {
+							if (!itemsFound[j]) {
+								itemsFound[j] = true;
+								break;
+							}
+						}
+					}
+				}
 				ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
 				heaps.addAll(getMobDrops(l));
 
@@ -248,7 +267,7 @@ public class SeedFinder {
 
 						for (int j = 0; j < itemList.size(); j++) {
 							if (item.title().toLowerCase().contains(itemList.get(j))) {
-								if (itemsFound[j] == false) {
+								if (!itemsFound[j]) {
 									itemsFound[j] = true;
 									break;
 								}
@@ -260,6 +279,8 @@ public class SeedFinder {
 
 			Dungeon.depth++;
 		}
+
+
 
 		if (Options.condition == Condition.ANY) {
 			for (int i = 0; i < itemList.size(); i++) {
@@ -280,13 +301,32 @@ public class SeedFinder {
 		}
 	}
 
+	private ArrayList<Item> getPossibleQuestRewards(Level level){
+		ArrayList<Item> rewards = new ArrayList<>();
+		if (Ghost.Quest.armor != null) {
+			rewards.add(Ghost.Quest.armor.identify());
+			rewards.add(Ghost.Quest.weapon.identify());
+			Ghost.Quest.complete();
+		}
+		if (Wandmaker.Quest.wand1 != null) {
+			rewards.add(Wandmaker.Quest.wand1.identify());
+			rewards.add(Wandmaker.Quest.wand2.identify());
+			Wandmaker.Quest.complete();
+		}
+		if (Imp.Quest.reward != null) {
+			rewards.add(Imp.Quest.reward.identify());
+			Imp.Quest.complete();
+		}
+		return rewards;
+	}
+
 	private void logSeedItems(String seed, int floors) {
 		PrintWriter out = null;
 		OutputStream out_fd = System.out;
 
 		try {
-			if (Options.ouputFile != "stdout")
-				out_fd = new FileOutputStream(Options.ouputFile, true);
+			if (Options.outputFile != "stdout")
+				out_fd = new FileOutputStream(Options.outputFile, true);
 
 			out = new PrintWriter(out_fd);
 		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
@@ -298,7 +338,7 @@ public class SeedFinder {
 		Dungeon.init();
 
 		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
-								  CorpseDust.class, Embers.class, CeremonialCandle.class, Pickaxe.class);
+				Embers.class, CeremonialCandle.class, Pickaxe.class);
 
 		out.printf("Items for seed %s (%d):\n\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 

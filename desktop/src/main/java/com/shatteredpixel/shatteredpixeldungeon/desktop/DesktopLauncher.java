@@ -183,7 +183,7 @@ public class DesktopLauncher {
 		config.setMaximized(SPDSettings.windowMaximized());
 
 		//going fullscreen on launch is still buggy on macOS, so game enters it slightly later
-		if (SPDSettings.fullscreen() && !SharedLibraryLoader.isMac) {
+		if (false && !SharedLibraryLoader.isMac) {
 			config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		}
 		

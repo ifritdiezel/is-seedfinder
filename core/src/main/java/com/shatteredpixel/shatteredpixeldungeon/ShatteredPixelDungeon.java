@@ -164,10 +164,10 @@ public class ShatteredPixelDungeon extends Game {
 	}
 	
 	public void updateDisplaySize(){
-		platform.updateDisplaySize();
+
 	}
 
 	public static void updateSystemUI() {
-		platform.updateSystemUI();
+
 	}
 }
