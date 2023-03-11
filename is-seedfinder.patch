@@ -1,29 +1,52 @@
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java	(date 1675245846839)
-@@ -100,7 +100,7 @@
- import java.util.HashMap;
- import java.util.HashSet;
+From 562456c218412c8f3a6b5821a7a817e5f92de21e Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Wed, 1 Feb 2023 16:50:11 +0500
+Subject: [PATCH 1/9] initial
+
+---
+ .../java/com/watabou/utils/DeviceCompat.java  |   4 +-
+ .../shatteredpixeldungeon/SeedFinder.java     | 394 ++++++++++++++++++
+ .../ShatteredPixelDungeon.java                |  13 +-
+ .../actors/mobs/ArmoredStatue.java            |   2 +-
+ .../actors/mobs/Statue.java                   |   2 +-
+ .../actors/mobs/npcs/Wandmaker.java           |   2 +-
+ .../shatteredpixeldungeon/items/Heap.java     |  15 +-
+ .../shatteredpixeldungeon/levels/Level.java   |   2 +-
+ .../messages/Languages.java                   |   4 -
+ .../desktop/DesktopLauncher.java              |   7 +-
+ 10 files changed, 417 insertions(+), 28 deletions(-)
+ create mode 100644 core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+
+diff --git a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
+index 5deeeab25..c872ffbff 100644
+--- a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
++++ b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
+@@ -21,11 +21,9 @@
  
--public abstract class Level implements Bundlable {
-+public abstract class  Level implements Bundlable {
+ package com.watabou.utils;
+ 
+-import com.badlogic.gdx.Application;
+ import com.badlogic.gdx.Gdx;
+ import com.badlogic.gdx.Input;
+ import com.badlogic.gdx.utils.SharedLibraryLoader;
+-import com.watabou.noosa.Game;
+ 
+ //TODO migrate to platformSupport class
+ public class DeviceCompat {
+@@ -61,7 +59,7 @@ public class DeviceCompat {
+ 	}
  	
- 	public static enum Feeling {
- 		NONE,
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
+ 	public static boolean isDebug(){
+-		return Game.version.contains("INDEV");
++		return true;
+ 	}
+ 	
+ 	public static void log( String tag, String message ){
 diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
 new file mode 100644
---- /dev/null	(date 1675247499129)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java	(date 1675247499129)
+index 000000000..cdc314583
+--- /dev/null
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
 @@ -0,0 +1,394 @@
 +package com.shatteredpixel.shatteredpixeldungeon;
 +
@@ -419,158 +442,11 @@ new file mode 100644
 +    }
 +
 +}
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java	(date 1675242810262)
-@@ -47,7 +47,7 @@
- 		properties.add(Property.INORGANIC);
- 	}
- 	
--	protected Weapon weapon;
-+	public Weapon weapon;
- 
- 	public boolean levelGenStatue = true;
- 	
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java	(date 1675242810258)
-@@ -41,7 +41,7 @@
- 		spriteClass = StatueSprite.class;
- 	}
- 
--	protected Armor armor;
-+	public Armor armor;
- 
- 	public ArmoredStatue(){
- 		super();
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java	(date 1675242810254)
-@@ -201,7 +201,7 @@
- 	
- 	public static class Quest {
- 
--		private static int type;
-+		public static int type;
- 		// 1 = corpse dust quest
- 		// 2 = elemental embers quest
- 		// 3 = rotberry quest
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java	(date 1675247499117)
-@@ -45,7 +45,6 @@
- import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
- import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
- import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
--import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
- import com.watabou.noosa.audio.Sample;
- import com.watabou.utils.Bundlable;
- import com.watabou.utils.Bundle;
-@@ -65,7 +64,11 @@
- 		CRYSTAL_CHEST,
- 		TOMB,
- 		SKELETON,
--		REMAINS
-+		REMAINS,
-+		MIMIC,
-+		GOLDEN_MIMIC,
-+		CRYSTAL_MIMIC,
-+		STATUE
- 	}
- 	public Type type = Type.HEAP;
- 	
-@@ -369,6 +372,14 @@
- 				return Messages.get(this, "skeleton");
- 			case REMAINS:
- 				return Messages.get(this, "remains");
-+			case MIMIC:
-+				return "mimic";
-+			case GOLDEN_MIMIC:
-+				return "golden mimic";
-+			case CRYSTAL_MIMIC:
-+				return "crystal mimic";
-+			case STATUE:
-+				return "statue";
- 			default:
- 				return peek().title();
- 		}
-Index: SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
---- a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java	(date 1675247499129)
-@@ -21,11 +21,9 @@
- 
- package com.watabou.utils;
- 
--import com.badlogic.gdx.Application;
- import com.badlogic.gdx.Gdx;
- import com.badlogic.gdx.Input;
- import com.badlogic.gdx.utils.SharedLibraryLoader;
--import com.watabou.noosa.Game;
- 
- //TODO migrate to platformSupport class
- public class DeviceCompat {
-@@ -61,7 +59,7 @@
- 	}
- 	
- 	public static boolean isDebug(){
--		return Game.version.contains("INDEV");
-+		return true;
- 	}
- 	
- 	public static void log( String tag, String message ){
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java	(date 1675242810290)
-@@ -96,10 +96,6 @@
- 	}
- 
- 	public static Languages matchCode(String code){
--		for (Languages lang : Languages.values()){
--			if (lang.code().equals(code))
--				return lang;
--		}
- 		return ENGLISH;
- 	}
- 
-Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
 diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
---- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java	(date 1675247499121)
-@@ -27,8 +27,6 @@
+index 3568af8b4..74a368403 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
+@@ -27,8 +27,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
  import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
  import com.shatteredpixel.shatteredpixeldungeon.scenes.WelcomeScene;
  import com.watabou.noosa.Game;
@@ -579,7 +455,7 @@ diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Shatter
  import com.watabou.utils.DeviceCompat;
  import com.watabou.utils.PlatformSupport;
  
-@@ -97,17 +95,8 @@
+@@ -97,17 +95,8 @@ public class ShatteredPixelDungeon extends Game {
  	@Override
  	public void create() {
  		super.create();
@@ -598,14 +474,117 @@ diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Shatter
  	}
  
  	@Override
-Index: desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
+index 8c2683a8a..96e7c1b37 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
+@@ -41,7 +41,7 @@ public class ArmoredStatue extends Statue {
+ 		spriteClass = StatueSprite.class;
+ 	}
+ 
+-	protected Armor armor;
++	public Armor armor;
+ 
+ 	public ArmoredStatue(){
+ 		super();
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
+index db91b0654..8992eaaae 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
+@@ -47,7 +47,7 @@ public class Statue extends Mob {
+ 		properties.add(Property.INORGANIC);
+ 	}
+ 	
+-	protected Weapon weapon;
++	public Weapon weapon;
+ 
+ 	public boolean levelGenStatue = true;
+ 	
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
+index 740aa90b0..f3023f6b0 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
+@@ -201,7 +201,7 @@ public class Wandmaker extends NPC {
+ 	
+ 	public static class Quest {
+ 
+-		private static int type;
++		public static int type;
+ 		// 1 = corpse dust quest
+ 		// 2 = elemental embers quest
+ 		// 3 = rotberry quest
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
+index 5a3730dba..328dbce50 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
+@@ -45,7 +45,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+ import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+ import com.watabou.noosa.audio.Sample;
+ import com.watabou.utils.Bundlable;
+ import com.watabou.utils.Bundle;
+@@ -65,7 +64,11 @@ public class Heap implements Bundlable {
+ 		CRYSTAL_CHEST,
+ 		TOMB,
+ 		SKELETON,
+-		REMAINS
++		REMAINS,
++		MIMIC,
++		GOLDEN_MIMIC,
++		CRYSTAL_MIMIC,
++		STATUE
+ 	}
+ 	public Type type = Type.HEAP;
+ 	
+@@ -369,6 +372,14 @@ public class Heap implements Bundlable {
+ 				return Messages.get(this, "skeleton");
+ 			case REMAINS:
+ 				return Messages.get(this, "remains");
++			case MIMIC:
++				return "mimic";
++			case GOLDEN_MIMIC:
++				return "golden mimic";
++			case CRYSTAL_MIMIC:
++				return "crystal mimic";
++			case STATUE:
++				return "statue";
+ 			default:
+ 				return peek().title();
+ 		}
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
+index 28ba04179..5fe06b44f 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
+@@ -100,7 +100,7 @@ import java.util.Collection;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ 
+-public abstract class Level implements Bundlable {
++public abstract class  Level implements Bundlable {
+ 	
+ 	public static enum Feeling {
+ 		NONE,
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
+index 5f3c81211..0a4eeb7fe 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
+@@ -96,10 +96,6 @@ public enum Languages {
+ 	}
+ 
+ 	public static Languages matchCode(String code){
+-		for (Languages lang : Languages.values()){
+-			if (lang.code().equals(code))
+-				return lang;
+-		}
+ 		return ENGLISH;
+ 	}
+ 
 diff --git a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
---- a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
-+++ b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java	(date 1675247499125)
+index d4d20997a..b53df27ba 100644
+--- a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
++++ b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
 @@ -22,16 +22,14 @@
  package com.shatteredpixel.shatteredpixeldungeon.desktop;
  
@@ -624,7 +603,7 @@ diff --git a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desk
  import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
  import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
  import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
-@@ -196,6 +194,9 @@
+@@ -196,6 +194,9 @@ public class DesktopLauncher {
  		config.setWindowIcon("icons/icon_16.png", "icons/icon_32.png", "icons/icon_48.png",
  				"icons/icon_64.png", "icons/icon_128.png", "icons/icon_256.png");
  
@@ -634,4 +613,1651 @@ diff --git a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desk
 +		new SeedFinder(args);
  	}
  }
+-- 
+2.34.1
+
+
+From 822185c09086b605e9994e59c0fc49cc61795b42 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Wed, 1 Feb 2023 17:06:02 +0500
+Subject: [PATCH 2/9] Update README.md
+
+---
+ README.md | 52 +++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 39 insertions(+), 13 deletions(-)
+
+diff --git a/README.md b/README.md
+index 420aed93d..ae8f06b92 100644
+--- a/README.md
++++ b/README.md
+@@ -1,20 +1,46 @@
+-# Shattered Pixel Dungeon
++# IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
+ 
+-A Roguelike RPG, with randomly generated levels, items, enemies, and traps! Based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
++Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).
++It can also display items found on a specific seed.
+ 
+-Shattered Pixel Dungeon currently compiles for Android, iOS and Desktop platforms. It is available from [Google Play](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon), [the App Store](https://apps.apple.com/app/shattered-pixel-dungeon/id1563121109), and right here on [GitHub](https://github.com/00-Evan/shattered-pixel-dungeon/releases).
++New feature summary:
++- Specify the seed to start scanning with. Can be used to continue scanning after terminating the application or to run multiple instances to make use of multiple threads
++- Specify final seed to stop at, useful for running multiple instances
++- Skips every boss floor to slightly improve performance
+ 
+-If you like this game, please consider [supporting me on Patreon](https://www.patreon.com/ShatteredPixel)!
++# How to use
+ 
+-There is an official blog for this project at [ShatteredPixel.com](https://www.shatteredpixel.com).
++## Seed display mode
+ 
+-The game also has a translation project hosted on [Transifex](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
++If no more than two arguments are provided, the items found in a given seed will be printed on the screen:
+ 
+-Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
++```
++java -jar seed-finder.jar floors seed
++```
+ 
+-If you'd like to work with the code, you can find the following guides in `/docs`:
+-- [Compiling for Android.](docs/getting-started-android.md)
+-    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
+-- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
+-- [Compiling for iOS.](docs/getting-started-ios.md)
+-- [Recommended changes for making your own mod.](docs/recommended-changes.md)
+\ No newline at end of file
++- **floors**: maximum depth to display
++- **seed**: dungeon seed to analyze
++
++## Finder mode
++
++If al least 3 arguments are provided, the application will try to find a specific seed:
++
++```
++java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending seed]
++```
++
++- **floors**: maximum depth to look for the items
++- **condition**: can be either `any` or `all`: the first will consider a seed valid if any of the specified items has been found, the second one requires _all_ of the items to spawn instead
++- **item_list**: file name containing a list of items, one item per line
++- **output_file**: file name to save the item list for each seed
++- **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
++- **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
++
++The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
++
++The application will run until the set final seed is scanned or all the seeds have been tested by default (virtually indefinitely), so stop it using ctrl-C when you have found enough seeds for your needs.
++
++Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
++
++# How to build
++The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release
+-- 
+2.34.1
+
+
+From 2725be2881c1e72a8df5dbbcd6461a081e801ed8 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Wed, 1 Feb 2023 17:12:10 +0500
+Subject: [PATCH 3/9] added patch file
+
+---
+ README.md           |   3 +-
+ is-seedfinder.patch | 637 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 639 insertions(+), 1 deletion(-)
+ create mode 100644 is-seedfinder.patch
+
+diff --git a/README.md b/README.md
+index ae8f06b92..2c18feea2 100644
+--- a/README.md
++++ b/README.md
+@@ -43,4 +43,5 @@ The application will run until the set final seed is scanned or all the seeds ha
+ Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
+ 
+ # How to build
+-The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release
++The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release. 
++A modified [patch](https://github.com/ifritdiezel/is-seedfinder/blob/master/is-seedfinder.patch) to apply to an existing project is also available in the root directory.
+diff --git a/is-seedfinder.patch b/is-seedfinder.patch
+new file mode 100644
+index 000000000..7d98c9a9c
+--- /dev/null
++++ b/is-seedfinder.patch
+@@ -0,0 +1,637 @@
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/Level.java	(date 1675245846839)
++@@ -100,7 +100,7 @@
++ import java.util.HashMap;
++ import java.util.HashSet;
++ 
++-public abstract class Level implements Bundlable {
+++public abstract class  Level implements Bundlable {
++ 	
++ 	public static enum Feeling {
++ 		NONE,
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++new file mode 100644
++--- /dev/null	(date 1675247499129)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java	(date 1675247499129)
++@@ -0,0 +1,394 @@
+++package com.shatteredpixel.shatteredpixeldungeon;
+++
+++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
+++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+++import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+++import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+++import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
+++import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
+++import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
+++import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+++import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+++import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+++import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
+++import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+++import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+++import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+++import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
+++import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+++import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
+++import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
+++import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+++import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+++import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
+++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+++import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+++import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
+++import com.watabou.noosa.Game;
+++
+++import java.io.File;
+++import java.io.FileNotFoundException;
+++import java.io.FileOutputStream;
+++import java.io.FileWriter;
+++import java.io.IOException;
+++import java.io.OutputStream;
+++import java.io.PrintWriter;
+++import java.io.Writer;
+++import java.util.ArrayList;
+++import java.util.Arrays;
+++import java.util.LinkedList;
+++import java.util.List;
+++import java.util.Scanner;
+++
+++public class SeedFinder {
+++	enum Condition {ANY, ALL};
+++
+++	public static class Options {
+++		public static int floors;
+++		public static Condition condition;
+++		public static String itemListFile;
+++		public static String ouputFile;
+++		public static long seed;
+++		public static int startingSeed;
+++		public static long endingSeed;
+++	}
+++
+++	public class HeapItem {
+++		public Item item;
+++		public Heap heap;
+++
+++		public HeapItem(Item item, Heap heap) {
+++			this.item = item;
+++			this.heap = heap;
+++		}
+++	}
+++
+++	List<Class<? extends Item>> blacklist;
+++	ArrayList<String> itemList;
+++
+++	// TODO: make it parse the item list directly from the arguments
+++	private void parseArgs(String[] args) {
+++		if (args.length == 2) {
+++			Options.ouputFile = "stdout";
+++			Options.floors = Integer.parseInt(args[0]);
+++			Options.seed = DungeonSeed.convertFromText(args[1]);
+++
+++			return;			
+++		}
+++
+++		Options.floors = Integer.parseInt(args[0]);
+++		Options.condition = args[1].equals("any") ? Condition.ANY : Condition.ALL;
+++		Options.itemListFile = args[2];
+++		Options.ouputFile = args[3];
+++
+++		if (args.length < 5)
+++			Options.startingSeed = 0;
+++		else
+++			Options.startingSeed = Integer.parseInt((args[4]));
+++
+++		if (args.length < 6)
+++			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
+++		else
+++			Options.endingSeed = Integer.parseInt((args[5]));
+++
+++	}
+++
+++	private ArrayList<String> getItemList() {
+++		ArrayList<String> itemList = new ArrayList<>();
+++
+++		try {
+++			Scanner scanner = new Scanner(new File(Options.itemListFile));
+++
+++			while (scanner.hasNextLine()) {
+++				itemList.add(scanner.nextLine());
+++			}
+++
+++			scanner.close();
+++
+++		} catch (FileNotFoundException e) {
+++			e.printStackTrace();
+++		}
+++
+++		return itemList;
+++	}
+++
+++	private void addTextItems(String caption, ArrayList<HeapItem> items, StringBuilder builder) {
+++		if (!items.isEmpty()) {
+++			builder.append(caption + ":\n");
+++
+++			for (HeapItem item : items) {
+++				Item i = item.item;
+++				Heap h = item.heap;
+++
+++				if (((i instanceof Armor && ((Armor) i).hasGoodGlyph()) ||
+++					(i instanceof Weapon && ((Weapon) i).hasGoodEnchant()) ||
+++					(i instanceof Ring) || (i instanceof Wand)) && i.cursed)
+++					builder.append("- cursed " + i.title().toLowerCase());
+++
+++				else
+++					builder.append("- " + i.title().toLowerCase());
+++
+++				if (h.type != Type.HEAP)
+++					builder.append(" (" + h.title().toLowerCase() + ")");
+++
+++				builder.append("\n");
+++			}
+++
+++			builder.append("\n");
+++		}
+++	}
+++
+++	private void addTextQuest(String caption, ArrayList<Item> items, StringBuilder builder) {
+++		if (!items.isEmpty()) {
+++			builder.append(caption + ":\n");
+++
+++			for (Item i : items) {
+++				if (i.cursed)
+++					builder.append("- cursed " + i.title().toLowerCase() + "\n");
+++
+++				else
+++					builder.append("- " + i.title().toLowerCase() + "\n");
+++			}
+++
+++			builder.append("\n");
+++		}
+++	}
+++
+++    public SeedFinder(String[] args) {
+++		System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+++		parseArgs(args);
+++
+++		if (args.length == 2) {
+++			logSeedItems(Long.toString(Options.seed), Options.floors);
+++
+++			return;
+++		}
+++
+++		itemList = getItemList();
+++
+++		try {
+++			Writer outputFile = new FileWriter(Options.ouputFile);
+++			outputFile.close();
+++		} catch (IOException e) {
+++			e.printStackTrace();
+++		}
+++
+++		for (int i = Options.startingSeed; i < Options.endingSeed; i++) {
+++			if (testSeed(Integer.toString(i), Options.floors)) {
+++				System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+++				logSeedItems(Integer.toString(i), Options.floors);
+++			}
+++		}
+++	}
+++
+++	private ArrayList<Heap> getMobDrops(Level l) {
+++		ArrayList<Heap> heaps = new ArrayList<>();
+++
+++		for (Mob m : l.mobs) {
+++			if (m instanceof Statue) {
+++				Heap h = new Heap();
+++				h.items = new LinkedList<>();
+++				h.items.add(((Statue) m).weapon.identify());
+++				h.type = Type.STATUE;
+++				heaps.add(h);
+++			}
+++
+++			else if (m instanceof ArmoredStatue) {
+++				Heap h = new Heap();
+++				h.items = new LinkedList<>();
+++				h.items.add(((ArmoredStatue) m).armor.identify());
+++				h.items.add(((ArmoredStatue) m).weapon.identify());
+++				h.type = Type.STATUE;
+++				heaps.add(h);
+++			}
+++
+++			else if (m instanceof Mimic) {
+++				Heap h = new Heap();
+++				h.items = new LinkedList<>();
+++
+++				for (Item item : ((Mimic) m).items)
+++					h.items.add(item.identify());
+++
+++				if (m instanceof GoldenMimic) h.type = Type.GOLDEN_MIMIC;
+++				else if (m instanceof CrystalMimic) h.type = Type.CRYSTAL_MIMIC;
+++				else h.type = Type.MIMIC;
+++				heaps.add(h);
+++			}
+++		}
+++
+++		return heaps;
+++	}
+++
+++	private boolean testSeed(String seed, int floors) {
+++		SPDSettings.customSeed(seed);
+++		GamesInProgress.selectedClass = HeroClass.WARRIOR;
+++		Dungeon.init();
+++
+++		boolean[] itemsFound = new boolean[itemList.size()];
+++
+++		for (int i = 0; i < floors; i++) {
+++			Level l = Dungeon.newLevel();
+++
+++			if(Dungeon.depth % 5 != 0) {
+++				ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
+++				heaps.addAll(getMobDrops(l));
+++
+++				for (Heap h : heaps) {
+++					for (Item item : h.items) {
+++						item.identify();
+++
+++						for (int j = 0; j < itemList.size(); j++) {
+++							if (item.title().toLowerCase().contains(itemList.get(j))) {
+++								if (itemsFound[j] == false) {
+++									itemsFound[j] = true;
+++									break;
+++								}
+++							}
+++						}
+++					}
+++				}
+++			}
+++
+++			Dungeon.depth++;
+++		}
+++
+++		if (Options.condition == Condition.ANY) {
+++			for (int i = 0; i < itemList.size(); i++) {
+++				if (itemsFound[i] == true)
+++					return true;
+++			}
+++
+++			return false;
+++		}
+++
+++		else {
+++			for (int i = 0; i < itemList.size(); i++) {
+++				if (itemsFound[i] == false)
+++					return false;
+++			}
+++
+++			return true;
+++		}
+++	}
+++
+++	private void logSeedItems(String seed, int floors) {
+++		PrintWriter out = null;
+++		OutputStream out_fd = System.out;
+++
+++		try {
+++			if (Options.ouputFile != "stdout")
+++				out_fd = new FileOutputStream(Options.ouputFile, true);
+++
+++			out = new PrintWriter(out_fd);
+++		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
+++			e.printStackTrace();
+++		}
+++
+++		SPDSettings.customSeed(seed);
+++		GamesInProgress.selectedClass = HeroClass.WARRIOR;
+++		Dungeon.init();
+++
+++		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
+++								  CorpseDust.class, Embers.class, CeremonialCandle.class, Pickaxe.class);
+++
+++		out.printf("Items for seed %s (%d):\n\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+++
+++		for (int i = 0; i < floors; i++) {
+++			out.printf("--- floor %d ---\n\n", Dungeon.depth);
+++
+++			Level l = Dungeon.newLevel();
+++			ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
+++			StringBuilder builder = new StringBuilder();
+++			ArrayList<HeapItem> scrolls = new ArrayList<>();
+++			ArrayList<HeapItem> potions = new ArrayList<>();
+++			ArrayList<HeapItem> equipment = new ArrayList<>();
+++			ArrayList<HeapItem> rings = new ArrayList<>();
+++			ArrayList<HeapItem> artifacts = new ArrayList<>();
+++			ArrayList<HeapItem> wands = new ArrayList<>();
+++			ArrayList<HeapItem> others = new ArrayList<>();
+++
+++			// list quest rewards
+++			if (Ghost.Quest.armor != null) {
+++				ArrayList<Item> rewards = new ArrayList<>();
+++				rewards.add(Ghost.Quest.armor.identify());
+++				rewards.add(Ghost.Quest.weapon.identify());
+++				Ghost.Quest.complete();
+++
+++				addTextQuest("Ghost quest rewards", rewards, builder);
+++			}
+++
+++			if (Wandmaker.Quest.wand1 != null) {
+++				ArrayList<Item> rewards = new ArrayList<>();
+++				rewards.add(Wandmaker.Quest.wand1.identify());
+++				rewards.add(Wandmaker.Quest.wand2.identify());
+++				Wandmaker.Quest.complete();
+++
+++				builder.append("Wandmaker quest item: ");
+++
+++				switch (Wandmaker.Quest.type) {
+++					case 1: default:
+++						builder.append("corpse dust\n\n");
+++						break;
+++					case 2:
+++						builder.append("fresh embers\n\n");
+++						break;
+++					case 3:
+++						builder.append("rotberry seed\n\n");
+++				}
+++
+++				addTextQuest("Wandmaker quest rewards", rewards, builder);
+++			}
+++
+++			if (Imp.Quest.reward != null) {
+++				ArrayList<Item> rewards = new ArrayList<>();
+++				rewards.add(Imp.Quest.reward.identify());
+++				Imp.Quest.complete();
+++
+++				addTextQuest("Imp quest reward", rewards, builder);
+++			}
+++
+++			heaps.addAll(getMobDrops(l));
+++
+++			// list items
+++			for (Heap h : heaps) {
+++				for (Item item : h.items) {
+++					item.identify();
+++
+++					if (h.type == Type.FOR_SALE) continue;
+++					else if (blacklist.contains(item.getClass())) continue;
+++					else if (item instanceof Scroll) scrolls.add(new HeapItem(item, h));
+++					else if (item instanceof Potion) potions.add(new HeapItem(item, h));
+++					else if (item instanceof MeleeWeapon || item instanceof Armor) equipment.add(new HeapItem(item, h));
+++					else if (item instanceof Ring) rings.add(new HeapItem(item, h));
+++					else if (item instanceof Artifact) artifacts.add(new HeapItem(item, h));
+++					else if (item instanceof Wand) wands.add(new HeapItem(item, h));
+++					else others.add(new HeapItem(item, h));
+++				}
+++			}
+++
+++			addTextItems("Scrolls", scrolls, builder);
+++			addTextItems("Potions", potions, builder);
+++			addTextItems("Equipment", equipment, builder);
+++			addTextItems("Rings", rings, builder);
+++			addTextItems("Artifacts", artifacts, builder);
+++			addTextItems("Wands", wands, builder);
+++			addTextItems("Other", others, builder);
+++
+++			out.print(builder.toString());
+++
+++			Dungeon.depth++;
+++		}
+++
+++		out.close();
+++    }
+++
+++}
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Statue.java	(date 1675242810262)
++@@ -47,7 +47,7 @@
++ 		properties.add(Property.INORGANIC);
++ 	}
++ 	
++-	protected Weapon weapon;
+++	public Weapon weapon;
++ 
++ 	public boolean levelGenStatue = true;
++ 	
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/ArmoredStatue.java	(date 1675242810258)
++@@ -41,7 +41,7 @@
++ 		spriteClass = StatueSprite.class;
++ 	}
++ 
++-	protected Armor armor;
+++	public Armor armor;
++ 
++ 	public ArmoredStatue(){
++ 		super();
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java	(date 1675242810254)
++@@ -201,7 +201,7 @@
++ 	
++ 	public static class Quest {
++ 
++-		private static int type;
+++		public static int type;
++ 		// 1 = corpse dust quest
++ 		// 2 = elemental embers quest
++ 		// 3 = rotberry quest
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Heap.java	(date 1675247499117)
++@@ -45,7 +45,6 @@
++ import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
++ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
++-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
++ import com.watabou.noosa.audio.Sample;
++ import com.watabou.utils.Bundlable;
++ import com.watabou.utils.Bundle;
++@@ -65,7 +64,11 @@
++ 		CRYSTAL_CHEST,
++ 		TOMB,
++ 		SKELETON,
++-		REMAINS
+++		REMAINS,
+++		MIMIC,
+++		GOLDEN_MIMIC,
+++		CRYSTAL_MIMIC,
+++		STATUE
++ 	}
++ 	public Type type = Type.HEAP;
++ 	
++@@ -369,6 +372,14 @@
++ 				return Messages.get(this, "skeleton");
++ 			case REMAINS:
++ 				return Messages.get(this, "remains");
+++			case MIMIC:
+++				return "mimic";
+++			case GOLDEN_MIMIC:
+++				return "golden mimic";
+++			case CRYSTAL_MIMIC:
+++				return "crystal mimic";
+++			case STATUE:
+++				return "statue";
++ 			default:
++ 				return peek().title();
++ 		}
++Index: SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java
++--- a/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/SPD-classes/src/main/java/com/watabou/utils/DeviceCompat.java	(date 1675247499129)
++@@ -21,11 +21,9 @@
++ 
++ package com.watabou.utils;
++ 
++-import com.badlogic.gdx.Application;
++ import com.badlogic.gdx.Gdx;
++ import com.badlogic.gdx.Input;
++ import com.badlogic.gdx.utils.SharedLibraryLoader;
++-import com.watabou.noosa.Game;
++ 
++ //TODO migrate to platformSupport class
++ public class DeviceCompat {
++@@ -61,7 +59,7 @@
++ 	}
++ 	
++ 	public static boolean isDebug(){
++-		return Game.version.contains("INDEV");
+++		return true;
++ 	}
++ 	
++ 	public static void log( String tag, String message ){
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Languages.java	(date 1675242810290)
++@@ -96,10 +96,6 @@
++ 	}
++ 
++ 	public static Languages matchCode(String code){
++-		for (Languages lang : Languages.values()){
++-			if (lang.code().equals(code))
++-				return lang;
++-		}
++ 		return ENGLISH;
++ 	}
++ 
++Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
++--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java	(date 1675247499121)
++@@ -27,8 +27,6 @@
++ import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
++ import com.shatteredpixel.shatteredpixeldungeon.scenes.WelcomeScene;
++ import com.watabou.noosa.Game;
++-import com.watabou.noosa.audio.Music;
++-import com.watabou.noosa.audio.Sample;
++ import com.watabou.utils.DeviceCompat;
++ import com.watabou.utils.PlatformSupport;
++ 
++@@ -97,17 +95,8 @@
++ 	@Override
++ 	public void create() {
++ 		super.create();
+++		finish();
++ 
++-		updateSystemUI();
++-		SPDAction.loadBindings();
++-		
++-		Music.INSTANCE.enable( SPDSettings.music() );
++-		Music.INSTANCE.volume( SPDSettings.musicVol()*SPDSettings.musicVol()/100f );
++-		Sample.INSTANCE.enable( SPDSettings.soundFx() );
++-		Sample.INSTANCE.volume( SPDSettings.SFXVol()*SPDSettings.SFXVol()/100f );
++-
++-		Sample.INSTANCE.load( Assets.Sounds.all );
++-		
++ 	}
++ 
++ 	@Override
++Index: desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++diff --git a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
++--- a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
+++++ b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java	(date 1675247499125)
++@@ -22,16 +22,14 @@
++ package com.shatteredpixel.shatteredpixeldungeon.desktop;
++ 
++ import com.badlogic.gdx.Files;
++-import com.badlogic.gdx.Gdx;
++ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
++ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
++ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3FileHandle;
++-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3NativesLoader;
++ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Preferences;
++ import com.badlogic.gdx.files.FileHandle;
++-import com.badlogic.gdx.utils.GdxNativesLoader;
++ import com.badlogic.gdx.utils.SharedLibraryLoader;
++ import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+++import com.shatteredpixel.shatteredpixeldungeon.SeedFinder;
++ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
++ import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
++ import com.shatteredpixel.shatteredpixeldungeon.services.news.NewsImpl;
++@@ -196,6 +194,9 @@
++ 		config.setWindowIcon("icons/icon_16.png", "icons/icon_32.png", "icons/icon_48.png",
++ 				"icons/icon_64.png", "icons/icon_128.png", "icons/icon_256.png");
++ 
+++		config.setInitialVisible(false);
++ 		new Lwjgl3Application(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config);
+++
+++		new SeedFinder(args);
++ 	}
++ }
++
+-- 
+2.34.1
+
+
+From 8cf41134a51b3d0eefd864c45c8c1b95329a2780 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Thu, 16 Feb 2023 22:51:51 +0500
+Subject: [PATCH 4/9] quiet mode by passing q as an option, some removed
+ graphics code
+
+---
+ .../shatteredpixeldungeon/SeedFinder.java     | 82 ++++++++++++++-----
+ .../ShatteredPixelDungeon.java                |  4 +-
+ .../desktop/DesktopLauncher.java              |  2 +-
+ 3 files changed, 64 insertions(+), 24 deletions(-)
+
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+index cdc314583..7dacd0152 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+@@ -23,7 +23,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
+ import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+ import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
+-import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
+ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
+ import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
+@@ -56,12 +55,15 @@ public class SeedFinder {
+ 		public static int floors;
+ 		public static Condition condition;
+ 		public static String itemListFile;
+-		public static String ouputFile;
++		public static String outputFile;
+ 		public static long seed;
+-		public static int startingSeed;
++		public static long startingSeed;
+ 		public static long endingSeed;
++
++		public static boolean quietMode;
+ 	}
+ 
++
+ 	public class HeapItem {
+ 		public Item item;
+ 		public Heap heap;
+@@ -78,28 +80,29 @@ public class SeedFinder {
+ 	// TODO: make it parse the item list directly from the arguments
+ 	private void parseArgs(String[] args) {
+ 		if (args.length == 2) {
+-			Options.ouputFile = "stdout";
++			Options.outputFile = "stdout";
+ 			Options.floors = Integer.parseInt(args[0]);
+ 			Options.seed = DungeonSeed.convertFromText(args[1]);
+ 
+-			return;			
++			return;
+ 		}
+ 
+ 		Options.floors = Integer.parseInt(args[0]);
+ 		Options.condition = args[1].equals("any") ? Condition.ANY : Condition.ALL;
+ 		Options.itemListFile = args[2];
+-		Options.ouputFile = args[3];
++		Options.outputFile = args[3];
+ 
+ 		if (args.length < 5)
+ 			Options.startingSeed = 0;
+ 		else
+-			Options.startingSeed = Integer.parseInt((args[4]));
++			Options.startingSeed = Long.parseLong((args[4]));
+ 
+ 		if (args.length < 6)
+ 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
+ 		else
+-			Options.endingSeed = Integer.parseInt((args[5]));
++			Options.endingSeed = Long.parseLong((args[5]));
+ 
++		Options.quietMode = args[args.length-1].contains("q");
+ 	}
+ 
+ 	private ArrayList<String> getItemList() {
+@@ -149,14 +152,14 @@ public class SeedFinder {
+ 
+ 	private void addTextQuest(String caption, ArrayList<Item> items, StringBuilder builder) {
+ 		if (!items.isEmpty()) {
+-			builder.append(caption + ":\n");
++			builder.append(caption).append(":\n");
+ 
+ 			for (Item i : items) {
+ 				if (i.cursed)
+-					builder.append("- cursed " + i.title().toLowerCase() + "\n");
++					builder.append("- cursed ").append(i.title().toLowerCase()).append("\n");
+ 
+ 				else
+-					builder.append("- " + i.title().toLowerCase() + "\n");
++					builder.append("- ").append(i.title().toLowerCase()).append("\n");
+ 			}
+ 
+ 			builder.append("\n");
+@@ -164,7 +167,7 @@ public class SeedFinder {
+ 	}
+ 
+     public SeedFinder(String[] args) {
+-		System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
++		if (!Options.quietMode) System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+ 		parseArgs(args);
+ 
+ 		if (args.length == 2) {
+@@ -176,16 +179,17 @@ public class SeedFinder {
+ 		itemList = getItemList();
+ 
+ 		try {
+-			Writer outputFile = new FileWriter(Options.ouputFile);
++			Writer outputFile = new FileWriter(Options.outputFile);
+ 			outputFile.close();
+ 		} catch (IOException e) {
+ 			e.printStackTrace();
+ 		}
+ 
+-		for (int i = Options.startingSeed; i < Options.endingSeed; i++) {
+-			if (testSeed(Integer.toString(i), Options.floors)) {
+-				System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+-				logSeedItems(Integer.toString(i), Options.floors);
++		for (long i = Options.startingSeed; i < Options.endingSeed; i++) {
++			if (testSeed(Long.toString(i), Options.floors)) {
++				logSeedItems(Long.toString(i), Options.floors);
++				if (Options.quietMode) System.out.print(DungeonSeed.convertToCode(Dungeon.seed));
++				else System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+ 			}
+ 		}
+ 	}
+@@ -238,7 +242,22 @@ public class SeedFinder {
+ 		for (int i = 0; i < floors; i++) {
+ 			Level l = Dungeon.newLevel();
+ 
++
++
+ 			if(Dungeon.depth % 5 != 0) {
++				ArrayList<Item> rewards = getPossibleQuestRewards(l);
++				for (Item item : rewards) {
++					item.identify();
++
++					for (int j = 0; j < itemList.size(); j++) {
++						if (item.title().toLowerCase().contains(itemList.get(j))) {
++							if (!itemsFound[j]) {
++								itemsFound[j] = true;
++								break;
++							}
++						}
++					}
++				}
+ 				ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
+ 				heaps.addAll(getMobDrops(l));
+ 
+@@ -248,7 +267,7 @@ public class SeedFinder {
+ 
+ 						for (int j = 0; j < itemList.size(); j++) {
+ 							if (item.title().toLowerCase().contains(itemList.get(j))) {
+-								if (itemsFound[j] == false) {
++								if (!itemsFound[j]) {
+ 									itemsFound[j] = true;
+ 									break;
+ 								}
+@@ -261,6 +280,8 @@ public class SeedFinder {
+ 			Dungeon.depth++;
+ 		}
+ 
++
++
+ 		if (Options.condition == Condition.ANY) {
+ 			for (int i = 0; i < itemList.size(); i++) {
+ 				if (itemsFound[i] == true)
+@@ -280,13 +301,32 @@ public class SeedFinder {
+ 		}
+ 	}
+ 
++	private ArrayList<Item> getPossibleQuestRewards(Level level){
++		ArrayList<Item> rewards = new ArrayList<>();
++		if (Ghost.Quest.armor != null) {
++			rewards.add(Ghost.Quest.armor.identify());
++			rewards.add(Ghost.Quest.weapon.identify());
++			Ghost.Quest.complete();
++		}
++		if (Wandmaker.Quest.wand1 != null) {
++			rewards.add(Wandmaker.Quest.wand1.identify());
++			rewards.add(Wandmaker.Quest.wand2.identify());
++			Wandmaker.Quest.complete();
++		}
++		if (Imp.Quest.reward != null) {
++			rewards.add(Imp.Quest.reward.identify());
++			Imp.Quest.complete();
++		}
++		return rewards;
++	}
++
+ 	private void logSeedItems(String seed, int floors) {
+ 		PrintWriter out = null;
+ 		OutputStream out_fd = System.out;
+ 
+ 		try {
+-			if (Options.ouputFile != "stdout")
+-				out_fd = new FileOutputStream(Options.ouputFile, true);
++			if (Options.outputFile != "stdout")
++				out_fd = new FileOutputStream(Options.outputFile, true);
+ 
+ 			out = new PrintWriter(out_fd);
+ 		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
+@@ -298,7 +338,7 @@ public class SeedFinder {
+ 		Dungeon.init();
+ 
+ 		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
+-								  CorpseDust.class, Embers.class, CeremonialCandle.class, Pickaxe.class);
++				Embers.class, CeremonialCandle.class, Pickaxe.class);
+ 
+ 		out.printf("Items for seed %s (%d):\n\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+ 
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
+index 74a368403..6b2d926da 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ShatteredPixelDungeon.java
+@@ -164,10 +164,10 @@ public class ShatteredPixelDungeon extends Game {
+ 	}
+ 	
+ 	public void updateDisplaySize(){
+-		platform.updateDisplaySize();
++
+ 	}
+ 
+ 	public static void updateSystemUI() {
+-		platform.updateSystemUI();
++
+ 	}
+ }
+\ No newline at end of file
+diff --git a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
+index b53df27ba..8260691e2 100644
+--- a/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
++++ b/desktop/src/main/java/com/shatteredpixel/shatteredpixeldungeon/desktop/DesktopLauncher.java
+@@ -183,7 +183,7 @@ public class DesktopLauncher {
+ 		config.setMaximized(SPDSettings.windowMaximized());
+ 
+ 		//going fullscreen on launch is still buggy on macOS, so game enters it slightly later
+-		if (SPDSettings.fullscreen() && !SharedLibraryLoader.isMac) {
++		if (false && !SharedLibraryLoader.isMac) {
+ 			config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+ 		}
+ 		
+-- 
+2.34.1
+
+
+From 7df04319e3caf61d104725f76d1535b04abd3224 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Thu, 16 Feb 2023 23:32:41 +0500
+Subject: [PATCH 5/9] seedscan accepts path as third argument to write its
+ output to a file
+
+---
+ .../shatteredpixeldungeon/SeedFinder.java       | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+index 7dacd0152..fb497c8b5 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+@@ -46,6 +46,7 @@ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.LinkedList;
+ import java.util.List;
++import java.util.Objects;
+ import java.util.Scanner;
+ 
+ public class SeedFinder {
+@@ -79,11 +80,11 @@ public class SeedFinder {
+ 
+ 	// TODO: make it parse the item list directly from the arguments
+ 	private void parseArgs(String[] args) {
+-		if (args.length == 2) {
++		if (args.length == 2 || args.length == 3) {
+ 			Options.outputFile = "stdout";
+ 			Options.floors = Integer.parseInt(args[0]);
+ 			Options.seed = DungeonSeed.convertFromText(args[1]);
+-
++			if (args.length == 3) Options.outputFile = args[2];
+ 			return;
+ 		}
+ 
+@@ -101,8 +102,7 @@ public class SeedFinder {
+ 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
+ 		else
+ 			Options.endingSeed = Long.parseLong((args[5]));
+-
+-		Options.quietMode = args[args.length-1].contains("q");
++			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flag
+ 	}
+ 
+ 	private ArrayList<String> getItemList() {
+@@ -167,10 +167,9 @@ public class SeedFinder {
+ 	}
+ 
+     public SeedFinder(String[] args) {
+-		if (!Options.quietMode) System.out.printf("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+ 		parseArgs(args);
+-
+-		if (args.length == 2) {
++		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
++		if (args.length == 2 || args.length == 3) {
+ 			logSeedItems(Long.toString(Options.seed), Options.floors);
+ 
+ 			return;
+@@ -325,9 +324,7 @@ public class SeedFinder {
+ 		OutputStream out_fd = System.out;
+ 
+ 		try {
+-			if (Options.outputFile != "stdout")
+-				out_fd = new FileOutputStream(Options.outputFile, true);
+-
++			if (!Objects.equals(Options.outputFile, "stdout")) out_fd = new FileOutputStream(Options.outputFile, false);
+ 			out = new PrintWriter(out_fd);
+ 		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
+ 			e.printStackTrace();
+-- 
+2.34.1
+
+
+From 301af8f88dbe73de915027295b31321fb7589b4e Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Thu, 16 Feb 2023 23:38:32 +0500
+Subject: [PATCH 6/9] Update README.md
+
+---
+ README.md | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 2c18feea2..0a622aa81 100644
+--- a/README.md
++++ b/README.md
+@@ -15,18 +15,19 @@ New feature summary:
+ If no more than two arguments are provided, the items found in a given seed will be printed on the screen:
+ 
+ ```
+-java -jar seed-finder.jar floors seed
++java -jar seed-finder.jar floors seed [output_file]
+ ```
+ 
+ - **floors**: maximum depth to display
+ - **seed**: dungeon seed to analyze
++- **output_file**: if specified, scan results will be written to this file instead of console
+ 
+ ## Finder mode
+ 
+ If al least 3 arguments are provided, the application will try to find a specific seed:
+ 
+ ```
+-java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending seed]
++java -jar seed-finder.jar floors condition item_list output_file [starting_seed] [ending_seed] [option_flags]
+ ```
+ 
+ - **floors**: maximum depth to look for the items
+@@ -35,6 +36,7 @@ java -jar seed-finder.jar floors condition item_list output_file [starting_seed]
+ - **output_file**: file name to save the item list for each seed
+ - **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
+ - **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
++- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
+ 
+ The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
+ 
+-- 
+2.34.1
+
+
+From f5deeb268f4296fffbe2dd14255a7a2a5db2a346 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Fri, 17 Feb 2023 00:10:36 +0500
+Subject: [PATCH 7/9] forbidden runes flag support + readme update
+
+---
+ README.md                                                     | 2 +-
+ .../com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java  | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 0a622aa81..53e459896 100644
+--- a/README.md
++++ b/README.md
+@@ -36,7 +36,7 @@ java -jar seed-finder.jar floors condition item_list output_file [starting_seed]
+ - **output_file**: file name to save the item list for each seed
+ - **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
+ - **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
+-- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
++- **option_flags**: if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console. if this contains r, enable forbidden runes
+ 
+ The entries in the item list need to be in english, all lowercase and can optionally specify the enchantement and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
+ 
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+index fb497c8b5..3dc5ce373 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+@@ -62,6 +62,7 @@ public class SeedFinder {
+ 		public static long endingSeed;
+ 
+ 		public static boolean quietMode;
++		public static boolean runesOn;
+ 	}
+ 
+ 
+@@ -103,6 +104,7 @@ public class SeedFinder {
+ 		else
+ 			Options.endingSeed = Long.parseLong((args[5]));
+ 			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flag
++			Options.runesOn = args[args.length-1].contains("r");
+ 	}
+ 
+ 	private ArrayList<String> getItemList() {
+@@ -171,7 +173,6 @@ public class SeedFinder {
+ 		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+ 		if (args.length == 2 || args.length == 3) {
+ 			logSeedItems(Long.toString(Options.seed), Options.floors);
+-
+ 			return;
+ 		}
+ 
+@@ -233,6 +234,7 @@ public class SeedFinder {
+ 
+ 	private boolean testSeed(String seed, int floors) {
+ 		SPDSettings.customSeed(seed);
++		if (Options.runesOn) SPDSettings.challenges(64); else SPDSettings.challenges(0);
+ 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
+ 		Dungeon.init();
+ 
+-- 
+2.34.1
+
+
+From f7b18add7bdc4a0c4e293e371057e8b4918ed762 Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Mon, 13 Mar 2023 22:39:41 +0500
+Subject: [PATCH 8/9] functionality update
+
+---
+ .../shatteredpixeldungeon/SeedFinder.java     | 131 +++++++++++-------
+ .../shatteredpixeldungeon/items/Item.java     |   3 +-
+ .../items/potions/Potion.java                 |   4 +-
+ .../items/quest/CorpseDust.java               |   2 +-
+ .../items/quest/Embers.java                   |   2 +-
+ .../items/rings/Ring.java                     |   3 +-
+ .../items/scrolls/Scroll.java                 |   4 +-
+ .../plants/Rotberry.java                      |   2 +-
+ 8 files changed, 91 insertions(+), 60 deletions(-)
+
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+index 3dc5ce373..6deb94b70 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SeedFinder.java
+@@ -63,6 +63,8 @@ public class SeedFinder {
+ 
+ 		public static boolean quietMode;
+ 		public static boolean runesOn;
++		public static boolean compactOutput;
++		public static boolean skipConsumables;
+ 	}
+ 
+ 
+@@ -90,6 +92,7 @@ public class SeedFinder {
+ 		}
+ 
+ 		Options.floors = Integer.parseInt(args[0]);
++		if (Options.floors % 5 == 0) Options.floors--;
+ 		Options.condition = args[1].equals("any") ? Condition.ANY : Condition.ALL;
+ 		Options.itemListFile = args[2];
+ 		Options.outputFile = args[3];
+@@ -103,8 +106,10 @@ public class SeedFinder {
+ 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
+ 		else
+ 			Options.endingSeed = Long.parseLong((args[5]));
+-			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flag
+-			Options.runesOn = args[args.length-1].contains("r");
++		Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flags
++		Options.runesOn = args[args.length-1].contains("r");
++		Options.compactOutput = args[args.length-1].contains("c");
++		Options.skipConsumables = args[args.length-1].contains("s");
+ 	}
+ 
+ 	private ArrayList<String> getItemList() {
+@@ -128,19 +133,32 @@ public class SeedFinder {
+ 
+ 	private void addTextItems(String caption, ArrayList<HeapItem> items, StringBuilder builder) {
+ 		if (!items.isEmpty()) {
+-			builder.append(caption + ":\n");
++			if (!Options.compactOutput) builder.append(caption + ":\n");
+ 
+ 			for (HeapItem item : items) {
+ 				Item i = item.item;
+ 				Heap h = item.heap;
+ 
++				if (h.type == Type.CRYSTAL_CHEST) builder.append("* ");
++				else builder.append("- ");
++
+ 				if (((i instanceof Armor && ((Armor) i).hasGoodGlyph()) ||
+-					(i instanceof Weapon && ((Weapon) i).hasGoodEnchant()) ||
+-					(i instanceof Ring) || (i instanceof Wand)) && i.cursed)
+-					builder.append("- cursed " + i.title().toLowerCase());
++						(i instanceof Weapon && ((Weapon) i).hasGoodEnchant()) ||
++						(i instanceof Ring) || (i instanceof Wand) || (i instanceof Artifact)) && i.cursed)
++					builder.append("cursed " + i.title().toLowerCase());
+ 
+ 				else
+-					builder.append("- " + i.title().toLowerCase());
++					builder.append(i.title().toLowerCase());
++
++				if (i instanceof Potion){
++					builder.append(" (" + ((Potion) i).color + ")" );
++				}
++				if (i instanceof Scroll){
++					builder.append(" (" + ((Scroll) i).rune.toLowerCase() + ")" );
++				}
++				if (i instanceof Ring){
++					builder.append(" (" + ((Ring) i).gem + ")" );
++				}
+ 
+ 				if (h.type != Type.HEAP)
+ 					builder.append(" (" + h.title().toLowerCase() + ")");
+@@ -148,7 +166,7 @@ public class SeedFinder {
+ 				builder.append("\n");
+ 			}
+ 
+-			builder.append("\n");
++			if (!Options.compactOutput) builder.append("\n");
+ 		}
+ 	}
+ 
+@@ -158,25 +176,19 @@ public class SeedFinder {
+ 
+ 			for (Item i : items) {
+ 				if (i.cursed)
+-					builder.append("- cursed ").append(i.title().toLowerCase()).append("\n");
++					builder.append(" * cursed ").append(i.title().toLowerCase()).append("\n");
+ 
+ 				else
+-					builder.append("- ").append(i.title().toLowerCase()).append("\n");
++					builder.append(" * ").append(i.title().toLowerCase()).append("\n");
+ 			}
+ 
+-			builder.append("\n");
++			if (!Options.compactOutput) builder.append("\n");
+ 		}
+ 	}
+ 
+-    public SeedFinder(String[] args) {
++	public SeedFinder(String[] args) {
+ 		parseArgs(args);
+ 		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
+-		if (args.length == 2 || args.length == 3) {
+-			logSeedItems(Long.toString(Options.seed), Options.floors);
+-			return;
+-		}
+-
+-		itemList = getItemList();
+ 
+ 		try {
+ 			Writer outputFile = new FileWriter(Options.outputFile);
+@@ -185,6 +197,13 @@ public class SeedFinder {
+ 			e.printStackTrace();
+ 		}
+ 
++		if (args.length == 2 || args.length == 3) {
++			logSeedItems(Long.toString(Options.seed), Options.floors);
++			return;
++		}
++
++		itemList = getItemList();
++
+ 		for (long i = Options.startingSeed; i < Options.endingSeed; i++) {
+ 			if (testSeed(Long.toString(i), Options.floors)) {
+ 				logSeedItems(Long.toString(i), Options.floors);
+@@ -198,19 +217,20 @@ public class SeedFinder {
+ 		ArrayList<Heap> heaps = new ArrayList<>();
+ 
+ 		for (Mob m : l.mobs) {
+-			if (m instanceof Statue) {
++
++			if (m instanceof ArmoredStatue) {
+ 				Heap h = new Heap();
+ 				h.items = new LinkedList<>();
+-				h.items.add(((Statue) m).weapon.identify());
++				h.items.add(((ArmoredStatue) m).armor.identify());
++				h.items.add(((ArmoredStatue) m).weapon.identify());
+ 				h.type = Type.STATUE;
+ 				heaps.add(h);
+ 			}
+ 
+-			else if (m instanceof ArmoredStatue) {
++			else if (m instanceof Statue) {
+ 				Heap h = new Heap();
+ 				h.items = new LinkedList<>();
+-				h.items.add(((ArmoredStatue) m).armor.identify());
+-				h.items.add(((ArmoredStatue) m).weapon.identify());
++				h.items.add(((Statue) m).weapon.identify());
+ 				h.type = Type.STATUE;
+ 				heaps.add(h);
+ 			}
+@@ -244,21 +264,11 @@ public class SeedFinder {
+ 			Level l = Dungeon.newLevel();
+ 
+ 
+-
++			boolean crystalChestFound = false;
++			boolean questRewardFound = false;
++			boolean questItemRequested = false;
+ 			if(Dungeon.depth % 5 != 0) {
+-				ArrayList<Item> rewards = getPossibleQuestRewards(l);
+-				for (Item item : rewards) {
+-					item.identify();
+ 
+-					for (int j = 0; j < itemList.size(); j++) {
+-						if (item.title().toLowerCase().contains(itemList.get(j))) {
+-							if (!itemsFound[j]) {
+-								itemsFound[j] = true;
+-								break;
+-							}
+-						}
+-					}
+-				}
+ 				ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
+ 				heaps.addAll(getMobDrops(l));
+ 
+@@ -267,17 +277,36 @@ public class SeedFinder {
+ 						item.identify();
+ 
+ 						for (int j = 0; j < itemList.size(); j++) {
++							if (crystalChestFound && h.type == Type.CRYSTAL_CHEST) continue;
+ 							if (item.title().toLowerCase().contains(itemList.get(j))) {
+ 								if (!itemsFound[j]) {
+ 									itemsFound[j] = true;
++									if (item.questItem) questItemRequested = true;
++									if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
+ 									break;
+ 								}
+ 							}
+ 						}
+ 					}
+ 				}
+-			}
+ 
++				ArrayList<Item> rewards = getPossibleQuestRewards(l);
++				for (Item item : rewards) {
++					if (questItemRequested) break;
++					item.identify();
++					for (int j = 0; j < itemList.size(); j++) {
++						if (questRewardFound) continue;
++
++						if (item.title().toLowerCase().contains(itemList.get(j))) {
++							if (!itemsFound[j]) {
++								itemsFound[j] = true;
++								questRewardFound = true;
++								break;
++							}
++						}
++					}
++				}
++			}
+ 			Dungeon.depth++;
+ 		}
+ 
+@@ -326,7 +355,7 @@ public class SeedFinder {
+ 		OutputStream out_fd = System.out;
+ 
+ 		try {
+-			if (!Objects.equals(Options.outputFile, "stdout")) out_fd = new FileOutputStream(Options.outputFile, false);
++			if (!Objects.equals(Options.outputFile, "stdout")) out_fd = new FileOutputStream(Options.outputFile, true);
+ 			out = new PrintWriter(out_fd);
+ 		} catch (FileNotFoundException e) { // gotta love Java mandatory exceptions
+ 			e.printStackTrace();
+@@ -339,10 +368,10 @@ public class SeedFinder {
+ 		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
+ 				Embers.class, CeremonialCandle.class, Pickaxe.class);
+ 
+-		out.printf("Items for seed %s (%d):\n\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
++		out.printf("Items for seed %s (%d):\n" + (Options.compactOutput ? "":"\n"), DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
+ 
+ 		for (int i = 0; i < floors; i++) {
+-			out.printf("--- floor %d ---\n\n", Dungeon.depth);
++			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
+ 
+ 			Level l = Dungeon.newLevel();
+ 			ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
+@@ -375,15 +404,17 @@ public class SeedFinder {
+ 
+ 				switch (Wandmaker.Quest.type) {
+ 					case 1: default:
+-						builder.append("corpse dust\n\n");
++						builder.append("corpse dust\n");
+ 						break;
+ 					case 2:
+-						builder.append("fresh embers\n\n");
++						builder.append("fresh embers\n");
+ 						break;
+ 					case 3:
+-						builder.append("rotberry seed\n\n");
+-				}
++						builder.append("rotberry seed\n");
++						break;
+ 
++				}
++				if (!Options.compactOutput) builder.append("\n");
+ 				addTextQuest("Wandmaker quest rewards", rewards, builder);
+ 			}
+ 
+@@ -413,21 +444,21 @@ public class SeedFinder {
+ 					else others.add(new HeapItem(item, h));
+ 				}
+ 			}
+-
+-			addTextItems("Scrolls", scrolls, builder);
+-			addTextItems("Potions", potions, builder);
++			if (!Options.skipConsumables) {
++				addTextItems("Scrolls", scrolls, builder);
++				addTextItems("Potions", potions, builder);
++			}
+ 			addTextItems("Equipment", equipment, builder);
+ 			addTextItems("Rings", rings, builder);
+ 			addTextItems("Artifacts", artifacts, builder);
+ 			addTextItems("Wands", wands, builder);
+-			addTextItems("Other", others, builder);
+-
++			if (!Options.skipConsumables) addTextItems("Other", others, builder);
+ 			out.print(builder.toString());
+ 
+ 			Dungeon.depth++;
+ 		}
+ 
+ 		out.close();
+-    }
++	}
+ 
+ }
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java
+index 1911ee6a2..77fd0e395 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java
+@@ -41,7 +41,6 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.MissileSprite;
+-import com.shatteredpixel.shatteredpixeldungeon.ui.InventoryPane;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+ import com.watabou.noosa.audio.Sample;
+ import com.watabou.noosa.particles.Emitter;
+@@ -83,6 +82,8 @@ public class Item implements Bundlable {
+ 	
+ 	public boolean cursed;
+ 	public boolean cursedKnown;
++
++	public boolean questItem = false;
+ 	
+ 	// Unique items persist through revival
+ 	public boolean unique = false;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/potions/Potion.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/potions/Potion.java
+index b11754c5e..e32b6bd1e 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/potions/Potion.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/potions/Potion.java
+@@ -47,11 +47,11 @@ import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
+ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Blindweed;
+-import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Earthroot;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Fadeleaf;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Firebloom;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Icecap;
++import com.shatteredpixel.shatteredpixeldungeon.plants.Mageroyal;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Sorrowmoss;
+@@ -134,7 +134,7 @@ public class Potion extends Item {
+ 	
+ 	protected static ItemStatusHandler<Potion> handler;
+ 	
+-	protected String color;
++	public String color;
+ 	
+ 	{
+ 		stackable = true;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/CorpseDust.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/CorpseDust.java
+index d8701e153..ba00c1fc9 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/CorpseDust.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/CorpseDust.java
+@@ -45,7 +45,7 @@ public class CorpseDust extends Item {
+ 		
+ 		cursed = true;
+ 		cursedKnown = true;
+-		
++		questItem = true;
+ 		unique = true;
+ 	}
+ 
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/Embers.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/Embers.java
+index 76e094d9a..e82931822 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/Embers.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/Embers.java
+@@ -29,7 +29,7 @@ public class Embers extends Item {
+ 
+ 	{
+ 		image = ItemSpriteSheet.EMBER;
+-
++		questItem = true;
+ 		unique = true;
+ 	}
+ 
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/rings/Ring.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/rings/Ring.java
+index e8c52e35c..57d438604 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/rings/Ring.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/rings/Ring.java
+@@ -41,7 +41,6 @@ import com.watabou.utils.Bundle;
+ import com.watabou.utils.Random;
+ 
+ import java.util.ArrayList;
+-import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.LinkedHashMap;
+ 
+@@ -68,7 +67,7 @@ public class Ring extends KindofMisc {
+ 	
+ 	private static ItemStatusHandler<Ring> handler;
+ 	
+-	private String gem;
++	public String gem;
+ 	
+ 	//rings cannot be 'used' like other equipment, so they ID purely based on exp
+ 	private float levelsToID = 1;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java
+index 6f288aae8..208eb9bab 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java
+@@ -37,7 +37,6 @@ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.UnstableSpellboo
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfAntiMagic;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFear;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAggression;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfAugmentation;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfBlast;
+@@ -46,6 +45,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfClairvoyance
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDeepSleep;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfDisarming;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
++import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFear;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfFlock;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfIntuition;
+ import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfShock;
+@@ -87,7 +87,7 @@ public abstract class Scroll extends Item {
+ 	
+ 	protected static ItemStatusHandler<Scroll> handler;
+ 	
+-	protected String rune;
++	public String rune;
+ 	
+ 	{
+ 		stackable = true;
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/plants/Rotberry.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/plants/Rotberry.java
+index 6c6b16a80..031a4817f 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/plants/Rotberry.java
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/plants/Rotberry.java
+@@ -67,7 +67,7 @@ public class Rotberry extends Plant {
+ 			image = ItemSpriteSheet.SEED_ROTBERRY;
+ 
+ 			plantClass = Rotberry.class;
+-
++			questItem = true;
+ 			unique = true;
+ 		}
+ 		
+-- 
+2.34.1
+
+
+From d57ca4ede0eb669315ef3e7e6f2f17e05d519a9d Mon Sep 17 00:00:00 2001
+From: ifritdiezel <ifritdiezel@gmail.com>
+Date: Mon, 13 Mar 2023 22:49:19 +0500
+Subject: [PATCH 9/9] i do NOT want to download robovm or whatever
+
+---
+ settings.gradle | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/settings.gradle b/settings.gradle
+index 579157ae5..fa4dbfb35 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -4,7 +4,6 @@ include ':core'
+ 
+ //platform modules
+ include ':android'
+-include ':ios'
+ include ':desktop'
+ 
+ //service modules
+-- 
+2.34.1
 
