@@ -29,7 +29,7 @@ public class Embers extends Item {
 
 	{
 		image = ItemSpriteSheet.EMBER;
-
+		questItem = true;
 		unique = true;
 	}
 

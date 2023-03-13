@@ -67,7 +67,7 @@ public class Rotberry extends Plant {
 			image = ItemSpriteSheet.SEED_ROTBERRY;
 
 			plantClass = Rotberry.class;
-
+			questItem = true;
 			unique = true;
 		}
 		

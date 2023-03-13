@@ -45,7 +45,7 @@ public class CorpseDust extends Item {
 		
 		cursed = true;
 		cursedKnown = true;
-		
+		questItem = true;
 		unique = true;
 	}
 

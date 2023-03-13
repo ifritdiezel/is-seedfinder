@@ -41,7 +41,6 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
@@ -68,7 +67,7 @@ public class Ring extends KindofMisc {
 	
 	private static ItemStatusHandler<Ring> handler;
 	
-	private String gem;
+	public String gem;
 	
 	//rings cannot be 'used' like other equipment, so they ID purely based on exp
 	private float levelsToID = 1;
