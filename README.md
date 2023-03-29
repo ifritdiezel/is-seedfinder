@@ -1,25 +1,64 @@
-# Shattered Pixel Dungeon
+# IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
 
-[Shattered Pixel Dungeon](https://shatteredpixel.com/shatteredpd/) is an open-source traditional roguelike dungeon crawler with randomized levels and enemies, and hundreds of items to collect and use. Its based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).
+It can also display items found on a specific seed.
 
-Shattered Pixel Dungeon currently compiles for Android, iOS, and Desktop platforms. You can find official releases of the game on:
+New feature summary:
+- Specify the seed to start scanning with. Can be used to continue scanning after terminating the application or to run multiple instances to make use of multiple threads
+- Specify final seed to stop at, useful for running multiple instances
+- Skips every boss floor to slightly improve performance
+- Fixes an issue with not finding armor from armored statues
+- Guarantees all items are obtainable by only counting 1 quest reward/crystal chest per floor
+- Checks quest rewards
+- Supports enabling generation-altering challenges before scanning
+- (arguably) Improved output formatting with extra options
+- Some extra output options for ease of automation (the [discord bot](https://github.com/ifritdiezel/is-seedfinder-bot))
 
-[![Get it on Google Play](https://shatteredpixel.com/assets/images/gplay-badge.png)](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon)
-[![Download on the App Store](https://shatteredpixel.com/assets/images/appstore-badge.png)](https://apps.apple.com/app/shattered-pixel-dungeon/id1563121109)
-[![Steam](https://shatteredpixel.com/assets/images/steam-badge.png)](https://store.steampowered.com/app/1769170/Shattered_Pixel_Dungeon/)
-[![Github Releases](https://shatteredpixel.com/assets/images/github-badge.png)](https://github.com/00-Evan/shattered-pixel-dungeon/releases)
+# How to use
 
-If you like this game, please consider [supporting me on Patreon](https://www.patreon.com/ShatteredPixel)!
+## Seed scanning mode
 
-There is an official blog for this project at [ShatteredPixel.com](https://www.shatteredpixel.com/blog/).
+Prints out all the items a given seed has.
 
-The game also has a translation project hosted on [Transifex](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
+```
+java -jar seed-finder.jar scan floors seed [output_file] <-option_flags>
+```
 
-Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
+- **floors**: maximum depth to display
+- **seed**: dungeon seed to analyze
+- **output_file**: if specified, scan results will be written to this file instead of console
+- **option_flags**:
+    - if this contains r, enable Forbidden Runes (generation-altering challenge)
+    - if this contains b, enable Barren Land (generation-altering challenge)
 
-If you'd like to work with the code, you can find the following guides in `/docs`:
-- [Compiling for Android.](docs/getting-started-android.md)
-    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
-- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
-- [Compiling for iOS.](docs/getting-started-ios.md)
-- [Recommended changes for making your own version.](docs/recommended-changes.md)
+## Finder mode
+
+Finds seeds containing specified items.
+
+```
+java -jar seed-finder.jar find floors condition item_list output_file [starting_seed] [ending_seed] <-option_flags>
+example: java -jar desktop-2.0.1.jar find 9 all in.txt out.txt 100000 99999999 -br 
+```
+
+- **floors**: maximum depth to look for the items
+- **condition**: can be either `any` or `all`: the first will consider a seed valid if any of the specified items has been found, the second one requires _all_ of the items to spawn instead
+- **item_list**: file name containing a list of items, one item per line
+- **output_file**: file name to save the item list for each seed
+- **starting_seed**: the first seed the script scans. useful for running multiple instances to utilize more threads, stays at 0 if unspecified
+- **ending_seed**: the script terminates upon reaching this seed, the last possible seed by default
+- **option_flags**:
+    - if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
+    - if this contains r, enable Forbidden Runes (generation-altering challenge)
+    - if this contains b, enable Barren Land (generation-altering challenge)
+    - if this contains s, don't log consumables in the output
+    - if this contains c, remove most whitespace from the output to make it compact
+
+The entries in the item list need to be in english, all lowercase and can optionally specify the enchantment and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
+
+The application will run until the set final seed is scanned or all the seeds have been tested by default (virtually indefinitely), so stop it using ctrl-C when you have found enough seeds for your needs.
+
+Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
+
+# How to build
+The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release. 
+A modified [patch](https://github.com/ifritdiezel/is-seedfinder/blob/master/is-seedfinder.patch) to apply to an existing project is also available in the root directory.

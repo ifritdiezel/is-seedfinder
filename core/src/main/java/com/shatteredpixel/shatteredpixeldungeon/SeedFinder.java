@@ -53,6 +53,9 @@ public class SeedFinder {
 	enum Condition {ANY, ALL};
 
 	public static class Options {
+
+		public static boolean scan;
+
 		public static int floors;
 		public static Condition condition;
 		public static String itemListFile;
@@ -63,6 +66,7 @@ public class SeedFinder {
 
 		public static boolean quietMode;
 		public static boolean runesOn;
+		public static boolean barrenOn;
 		public static boolean compactOutput;
 		public static boolean skipConsumables;
 	}
@@ -83,33 +87,46 @@ public class SeedFinder {
 
 	// TODO: make it parse the item list directly from the arguments
 	private void parseArgs(String[] args) {
-		if (args.length == 2 || args.length == 3) {
+
+		if (args.length == 0) printHelp();
+
+		if (args[0].equals("scan")) Options.scan = true;
+		else if (args[0].equals("find")) Options.scan = false;
+		else printHelp();
+
+		if (args[args.length-1].startsWith("-")){
+			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flags
+			Options.runesOn = args[args.length-1].contains("r");
+			Options.compactOutput = args[args.length-1].contains("c");
+			Options.skipConsumables = args[args.length-1].contains("s");
+			Options.barrenOn = args[args.length-1].contains("b");
+		}
+
+		if (Options.scan) {
 			Options.outputFile = "stdout";
-			Options.floors = Integer.parseInt(args[0]);
-			Options.seed = DungeonSeed.convertFromText(args[1]);
-			if (args.length == 3) Options.outputFile = args[2];
+			Options.floors = Integer.parseInt(args[1]);
+			Options.seed = DungeonSeed.convertFromText(args[2]);
+			if (args.length >= 4 && !args[3].startsWith("-")) Options.outputFile = args[3];
 			return;
 		}
 
-		Options.floors = Integer.parseInt(args[0]);
+		Options.floors = Integer.parseInt(args[1]);
 		if (Options.floors % 5 == 0) Options.floors--;
-		Options.condition = args[1].equals("any") ? Condition.ANY : Condition.ALL;
-		Options.itemListFile = args[2];
-		Options.outputFile = args[3];
-
-		if (args.length < 5)
-			Options.startingSeed = 0;
-		else
-			Options.startingSeed = Long.parseLong((args[4]));
+		Options.condition = args[2].equals("any") ? Condition.ANY : Condition.ALL;
+		Options.itemListFile = args[3];
+		Options.outputFile = args[4];
 
 		if (args.length < 6)
+			Options.startingSeed = 0;
+		else
+			Options.startingSeed = Long.parseLong((args[5]));
+
+		if (args.length < 7)
 			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
 		else
-			Options.endingSeed = Long.parseLong((args[5]));
-		Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flags
-		Options.runesOn = args[args.length-1].contains("r");
-		Options.compactOutput = args[args.length-1].contains("c");
-		Options.skipConsumables = args[args.length-1].contains("s");
+			Options.endingSeed = Long.parseLong((args[6]));
+
+
 	}
 
 	private ArrayList<String> getItemList() {
@@ -197,7 +214,7 @@ public class SeedFinder {
 			e.printStackTrace();
 		}
 
-		if (args.length == 2 || args.length == 3) {
+		if (Options.scan) {
 			logSeedItems(Long.toString(Options.seed), Options.floors);
 			return;
 		}
@@ -254,7 +271,10 @@ public class SeedFinder {
 
 	private boolean testSeed(String seed, int floors) {
 		SPDSettings.customSeed(seed);
-		if (Options.runesOn) SPDSettings.challenges(64); else SPDSettings.challenges(0);
+		int chals = 0;
+		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
+		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
+		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
 
@@ -362,6 +382,10 @@ public class SeedFinder {
 		}
 
 		SPDSettings.customSeed(seed);
+		int chals = 0;
+		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
+		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
+		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
 
@@ -461,4 +485,10 @@ public class SeedFinder {
 		out.close();
 	}
 
+	private void printHelp(){
+		System.err.println("Usage: find (floors) (condition) (item_list_file) (output_file) [starting_seed] [ending_seed] <option_flags>");
+		System.err.println("scan (floors) (seed) [output_file] <option_flags>");
+		System.err.println("for help visit https://github.com/ifritdiezel/is-seedfinder#how-to-use");
+		System.exit(1);
+	}
 }
