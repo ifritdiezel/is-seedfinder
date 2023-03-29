@@ -395,9 +395,16 @@ public class SeedFinder {
 		out.printf("Items for seed %s (%d):\n" + (Options.compactOutput ? "":"\n"), DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 
 		for (int i = 0; i < floors; i++) {
+
 			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
 
 			Level l = Dungeon.newLevel();
+
+			if (Dungeon.depth % 5 == 0){
+				Dungeon.depth++;
+				continue;
+			}
+
 			ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
 			StringBuilder builder = new StringBuilder();
 			ArrayList<HeapItem> scrolls = new ArrayList<>();
@@ -415,7 +422,7 @@ public class SeedFinder {
 				rewards.add(Ghost.Quest.weapon.identify());
 				Ghost.Quest.complete();
 
-				addTextQuest("Ghost quest rewards", rewards, builder);
+				addTextQuest("* Ghost quest rewards", rewards, builder);
 			}
 
 			if (Wandmaker.Quest.wand1 != null) {
@@ -439,7 +446,7 @@ public class SeedFinder {
 
 				}
 				if (!Options.compactOutput) builder.append("\n");
-				addTextQuest("Wandmaker quest rewards", rewards, builder);
+				addTextQuest("* Wandmaker quest rewards", rewards, builder);
 			}
 
 			if (Imp.Quest.reward != null) {
@@ -447,7 +454,7 @@ public class SeedFinder {
 				rewards.add(Imp.Quest.reward.identify());
 				Imp.Quest.complete();
 
-				addTextQuest("Imp quest reward", rewards, builder);
+				addTextQuest("* Imp quest reward", rewards, builder);
 			}
 
 			heaps.addAll(getMobDrops(l));
