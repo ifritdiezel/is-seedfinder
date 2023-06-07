@@ -203,6 +203,16 @@ public class SeedFinder {
 		}
 	}
 
+	private void addSingleReward(String caption, Item item, StringBuilder builder) {
+			builder.append(caption).append(": ");
+				if (item.cursed)
+					builder.append("cursed ").append(item.title().toLowerCase()).append("\n");
+				else
+					builder.append(" ").append(item.title().toLowerCase()).append("\n");
+			if (!Options.compactOutput) builder.append("\n");
+
+	}
+
 	public SeedFinder(String[] args) {
 		parseArgs(args);
 		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
@@ -283,11 +293,21 @@ public class SeedFinder {
 		for (int i = 0; i < floors; i++) {
 			Level l = Dungeon.newLevel();
 
-
 			boolean crystalChestFound = false;
 			boolean questRewardFound = false;
 			boolean questItemRequested = false;
 			if(Dungeon.depth % 5 != 0) {
+
+				if (l.sacrificeRoomPrize != null){
+				for (int j = 0; j < itemList.size(); j++) {
+					if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemList.get(j))) {
+						if (!itemsFound[j]) {
+							itemsFound[j] = true;
+							break;
+						}
+					}
+				}
+				}
 
 				ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
 				heaps.addAll(getMobDrops(l));
@@ -354,8 +374,8 @@ public class SeedFinder {
 	private ArrayList<Item> getPossibleQuestRewards(Level level){
 		ArrayList<Item> rewards = new ArrayList<>();
 		if (Ghost.Quest.armor != null) {
-			rewards.add(Ghost.Quest.armor.identify());
-			rewards.add(Ghost.Quest.weapon.identify());
+			rewards.add(Ghost.Quest.armor.inscribe(Ghost.Quest.glyph).identify());
+			rewards.add(Ghost.Quest.weapon.enchant(Ghost.Quest.enchant).identify());
 			Ghost.Quest.complete();
 		}
 		if (Wandmaker.Quest.wand1 != null) {
@@ -418,8 +438,12 @@ public class SeedFinder {
 			// list quest rewards
 			if (Ghost.Quest.armor != null) {
 				ArrayList<Item> rewards = new ArrayList<>();
-				rewards.add(Ghost.Quest.armor.identify());
-				rewards.add(Ghost.Quest.weapon.identify());
+
+				//if (Ghost.Quest.glyph != null)
+				rewards.add(Ghost.Quest.armor.inscribe(Ghost.Quest.glyph).identify());
+				rewards.add(Ghost.Quest.weapon.enchant(Ghost.Quest.enchant).identify());
+
+
 				Ghost.Quest.complete();
 
 				addTextQuest("* Ghost quest rewards", rewards, builder);
@@ -455,6 +479,10 @@ public class SeedFinder {
 				Imp.Quest.complete();
 
 				addTextQuest("* Imp quest reward", rewards, builder);
+			}
+
+			if (l.sacrificeRoomPrize != null) {
+				addSingleReward("- Sacrificial room item", l.sacrificeRoomPrize.identify(), builder);
 			}
 
 			heaps.addAll(getMobDrops(l));

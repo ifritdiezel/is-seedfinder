@@ -166,6 +166,8 @@ public abstract class  Level implements Bundlable {
 	public int color1 = 0x004400;
 	public int color2 = 0x88CC44;
 
+	public Item sacrificeRoomPrize = null;
+
 	private static final String VERSION     = "version";
 	private static final String WIDTH       = "width";
 	private static final String HEIGHT      = "height";
@@ -184,9 +186,8 @@ public abstract class  Level implements Bundlable {
 	private static final String FEELING		= "feeling";
 
 	public void create() {
-
 		Random.pushGenerator( Dungeon.seedCurDepth() );
-		
+		sacrificeRoomPrize = null;
 		if (!(Dungeon.bossLevel())) {
 
 			addItemToSpawn(Generator.random(Generator.Category.FOOD));

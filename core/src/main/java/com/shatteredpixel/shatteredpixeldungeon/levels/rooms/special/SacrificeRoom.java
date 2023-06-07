@@ -99,7 +99,7 @@ public class SacrificeRoom extends SpecialRoom {
 			}
 		}
 		prize.cursed = prize.cursedKnown = true;
-
+		level.sacrificeRoomPrize = prize;
 		return prize;
 	}
 
