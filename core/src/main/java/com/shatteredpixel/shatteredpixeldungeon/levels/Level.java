@@ -100,7 +100,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public abstract class  Level implements Bundlable {
+public abstract class Level implements Bundlable {
 	
 	public static enum Feeling {
 		NONE,
@@ -186,9 +186,11 @@ public abstract class  Level implements Bundlable {
 	private static final String FEELING		= "feeling";
 
 	public void create() {
+
 		Random.pushGenerator( Dungeon.seedCurDepth() );
 		sacrificeRoomPrize = null;
-		if (!(Dungeon.bossLevel())) {
+		//TODO maybe just make this part of RegularLevel?
+		if (!Dungeon.bossLevel() && Dungeon.branch == 0) {
 
 			addItemToSpawn(Generator.random(Generator.Category.FOOD));
 
@@ -544,6 +546,15 @@ public abstract class  Level implements Bundlable {
 		//iron stomach does not persist through chasm falling
 		Talent.WarriorFoodImmunity foodImmune = Dungeon.hero.buff(Talent.WarriorFoodImmunity.class);
 		if (foodImmune != null) foodImmune.detach();
+
+		//spend the hero's partial turns,  so the hero cannot take partial turns between floors
+		Dungeon.hero.spendToWhole();
+		for (Char ch : Actor.chars()){
+			//also adjust any mobs that are now ahead of the hero due to this
+			if (ch.cooldown() < Dungeon.hero.cooldown()){
+				ch.spendToWhole();
+			}
+		}
 	}
 
 	public void seal(){

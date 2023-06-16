@@ -819,7 +819,7 @@ public class Hero extends Char {
 		}
 		
 		if(hasTalent(Talent.BARKSKIN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set( (lvl*pointsInTalent(Talent.BARKSKIN))/2, 1 );
+			Barkskin.conditionallyAppend(this, (lvl*pointsInTalent(Talent.BARKSKIN))/2, 1 );
 		}
 		
 		return actResult;
@@ -1194,8 +1194,8 @@ public class Hero extends Char {
 
 				Level.beforeTransition();
 				InterlevelScene.curTransition = transition;
-				//TODO probably want to make this more flexible when more types exist
-				if (transition.type == LevelTransition.Type.REGULAR_EXIT) {
+				if (transition.type == LevelTransition.Type.REGULAR_EXIT
+					|| transition.type == LevelTransition.Type.BRANCH_EXIT) {
 					InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
 				} else {
 					InterlevelScene.mode = InterlevelScene.Mode.ASCEND;
