@@ -50,6 +50,7 @@ example: java -jar desktop-2.0.1.jar find 9 all in.txt out.txt 100000 99999999 -
     - if this contains q, skip printing the intro message and only output seeds in AAA-AAA-AAA format to console
     - if this contains r, enable Forbidden Runes (generation-altering challenge)
     - if this contains b, enable Barren Land (generation-altering challenge)
+    - if this contains d, enable Into Darkness (generation-altering challenge)
     - if this contains s, don't log consumables in the output
     - if this contains c, remove most whitespace from the output to make it compact
 

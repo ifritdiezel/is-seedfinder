@@ -67,6 +67,7 @@ public class SeedFinder {
 		public static boolean quietMode;
 		public static boolean runesOn;
 		public static boolean barrenOn;
+		public static boolean intoDarknessOn;
 		public static boolean compactOutput;
 		public static boolean skipConsumables;
 	}
@@ -100,6 +101,7 @@ public class SeedFinder {
 			Options.compactOutput = args[args.length-1].contains("c");
 			Options.skipConsumables = args[args.length-1].contains("s");
 			Options.barrenOn = args[args.length-1].contains("b");
+			Options.intoDarknessOn = args[args.length-1].contains("d");
 		}
 
 		if (Options.scan) {
@@ -284,6 +286,7 @@ public class SeedFinder {
 		int chals = 0;
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
 		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
+		if (Options.intoDarknessOn) chals += Challenges.DARKNESS;
 		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
@@ -405,6 +408,7 @@ public class SeedFinder {
 		int chals = 0;
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
 		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
+		if (Options.intoDarknessOn) chals += Challenges.DARKNESS;
 		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
