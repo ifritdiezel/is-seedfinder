@@ -30,9 +30,17 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Game;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,12 +59,15 @@ import java.util.Scanner;
 
 public class SeedFinder {
 	enum Condition {ANY, ALL};
+	enum Mode {SCAN, FIND, TEST}
+
+
 
 	public static class Options {
-
-		public static boolean scan;
+		public static Mode mode;
 
 		public static int floors;
+		public static int seedsToFind;
 		public static Condition condition;
 		public static String itemListFile;
 		public static String outputFile;
@@ -89,46 +100,79 @@ public class SeedFinder {
 	// TODO: make it parse the item list directly from the arguments
 	private void parseArgs(String[] args) {
 
-		if (args.length == 0) printHelp();
+		final org.apache.commons.cli.Options options = new org.apache.commons.cli.Options();
 
-		if (args[0].equals("scan")) Options.scan = true;
-		else if (args[0].equals("find")) Options.scan = false;
-		else printHelp();
+		options.addOption(new Option("mode", true, "scan/find/test"));
+		options.addOption(new Option("condition", true, "ANY to find any listed items or ALL to find all items"));
 
-		if (args[args.length-1].startsWith("-")){
-			Options.quietMode = args[args.length-1].contains("q"); //it shouldn't false trigger if output path contains the flags
-			Options.runesOn = args[args.length-1].contains("r");
-			Options.compactOutput = args[args.length-1].contains("c");
-			Options.skipConsumables = args[args.length-1].contains("s");
-			Options.barrenOn = args[args.length-1].contains("b");
-			Options.intoDarknessOn = args[args.length-1].contains("d");
+		options.addOption(new Option("floors", true, "how deep to scan"));
+		options.addOption(new Option("seeds","seeds_to_find", true, "how many seeds to find before stopping"));
+		options.addOption(new Option("start", "starting_seed", true, "seed to start with, default 0"));
+		options.addOption(new Option("seed", true, "seed to scan"));
+		options.addOption(new Option("end", "ending_seed", true, "seed to end with, default max seed"));
+
+
+		options.addOption(new Option("items", true, "file containing items"));
+		options.addOption(new Option("output", true, "file to write the results to"));
+
+		options.addOption(new Option("q", "quiet", false, "skip printing the intro message and only output seeds in AAA-AAA-AAA format to console"));
+		options.addOption(new Option("r", "runes", false, "enable Forbidden Runes (generation-altering challenge)"));
+		options.addOption(new Option("c", "compact", false, "remove most whitespace from the output to make it compact"));
+		options.addOption(new Option("s", "skip_consumables", false, "don't print consumables in the report"));
+		options.addOption(new Option("b", "barren_land", false, "enable Barren Land (generation-altering challenge)"));
+		options.addOption(new Option("d", "into_darkness", false, "enable Into Darkness (generation-altering challenge)"));
+
+		HelpFormatter formatter = new HelpFormatter();
+
+		CommandLineParser parser = new DefaultParser();
+		CommandLine line = null;
+		try {
+			line = parser.parse(options, args);
+		} catch (ParseException exp) {
+			System.out.println("Parsing failed.  Reason: " + exp.getMessage());
 		}
 
-		if (Options.scan) {
-			Options.outputFile = "stdout";
-			Options.floors = Integer.parseInt(args[1]);
-			Options.seed = DungeonSeed.convertFromText(args[2]);
-			if (args.length >= 4 && !args[3].startsWith("-")) Options.outputFile = args[3];
-			return;
+		if (args.length == 0){
+			formatter.printHelp("is-seedfinder", options);
+			System.out.println("test");
+			System.exit(1);
 		}
 
-		Options.floors = Integer.parseInt(args[1]);
-		if (Options.floors % 5 == 0) Options.floors--;
-		Options.condition = args[2].equals("any") ? Condition.ANY : Condition.ALL;
-		Options.itemListFile = args[3];
-		Options.outputFile = args[4];
+		assert line != null;
+		String mode = line.getOptionValue("mode").toLowerCase();
+			switch (mode){
+				case "find":
+					Options.mode = Mode.FIND;
+					break;
+				case "test":
+					Options.mode = Mode.TEST;
+					break;
+				default:
+					Options.mode = Mode.SCAN;
 
-		if (args.length < 6)
-			Options.startingSeed = 0;
-		else
-			Options.startingSeed = Long.parseLong((args[5]));
+			}
 
-		if (args.length < 7)
-			Options.endingSeed = DungeonSeed.TOTAL_SEEDS;
-		else
-			Options.endingSeed = Long.parseLong((args[6]));
+		if (line.getOptionValue("condition", "ALL").equalsIgnoreCase("all")) Options.condition = Condition.ALL;
+		else Options.condition = Condition.ANY;
 
+		Options.floors = Integer.parseInt(line.getOptionValue("floors", "24"));
+		Options.seedsToFind = Integer.parseInt(line.getOptionValue("seeds", "-1"));
 
+		Options.startingSeed = Long.parseLong(line.getOptionValue("start", "0"));
+		Options.endingSeed = Long.parseLong(line.getOptionValue("end", "5429503678975"));
+		Options.seed = Long.parseLong(line.getOptionValue("seed", "0"));
+
+		Options.itemListFile = line.getOptionValue("items");
+
+		if(line.hasOption("output")) Options.outputFile = line.getOptionValue("output", "stdout");
+		if (Options.outputFile.equals("stdout") && Options.mode == Mode.FIND) Options.outputFile = "out.txt";
+
+		if(line.hasOption("q")) Options.quietMode = true;
+		if(line.hasOption("r")) Options.runesOn = true;
+		if(line.hasOption("c")) Options.compactOutput = true;
+		if(line.hasOption("s")) Options.skipConsumables = true;
+		if(line.hasOption("b")) Options.barrenOn = true;
+		if(line.hasOption("d")) Options.intoDarknessOn = true;
 	}
 
 	private ArrayList<String> getItemList() {
@@ -215,7 +259,7 @@ public class SeedFinder {
 
 	}
 
-	public SeedFinder(String[] args) {
+	public SeedFinder(String[] args) throws InterruptedException {
 		parseArgs(args);
 		if (!Options.quietMode) System.out.print("Starting IS-Seedfinder, game version: " + Game.version + "\n");
 
@@ -226,20 +270,23 @@ public class SeedFinder {
 			e.printStackTrace();
 		}
 
-		if (Options.scan) {
+		if (Options.mode == Mode.SCAN) {
 			logSeedItems(Long.toString(Options.seed), Options.floors);
 			return;
 		}
 
 		itemList = getItemList();
+		int tofind = Options.seedsToFind;
 
-		for (long i = Options.startingSeed; i < Options.endingSeed; i++) {
+		for (long i = Options.startingSeed; i < Options.endingSeed && tofind != 0; i++) {
 			if (testSeed(Long.toString(i), Options.floors)) {
+				tofind--;
 				logSeedItems(Long.toString(i), Options.floors);
 				if (Options.quietMode) System.out.print(DungeonSeed.convertToCode(Dungeon.seed));
 				else System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 			}
 		}
+		if (Options.quietMode) Thread.sleep(3000); //give the poor thing some time
 	}
 
 	private ArrayList<Heap> getMobDrops(Level l) {
@@ -437,6 +484,8 @@ public class SeedFinder {
 			ArrayList<HeapItem> rings = new ArrayList<>();
 			ArrayList<HeapItem> artifacts = new ArrayList<>();
 			ArrayList<HeapItem> wands = new ArrayList<>();
+			ArrayList<HeapItem> missiles = new ArrayList<>();
+			ArrayList<HeapItem> shopitems = new ArrayList<>();
 			ArrayList<HeapItem> others = new ArrayList<>();
 
 			// list quest rewards
@@ -496,7 +545,9 @@ public class SeedFinder {
 				for (Item item : h.items) {
 					item.identify();
 
-					if (h.type == Type.FOR_SALE) continue;
+					if (h.type == Type.FOR_SALE) {
+						continue;
+					}
 					else if (blacklist.contains(item.getClass())) continue;
 					else if (item instanceof Scroll) scrolls.add(new HeapItem(item, h));
 					else if (item instanceof Potion) potions.add(new HeapItem(item, h));
@@ -504,6 +555,7 @@ public class SeedFinder {
 					else if (item instanceof Ring) rings.add(new HeapItem(item, h));
 					else if (item instanceof Artifact) artifacts.add(new HeapItem(item, h));
 					else if (item instanceof Wand) wands.add(new HeapItem(item, h));
+					else if (item instanceof MissileWeapon) missiles.add(new HeapItem(item, h));
 					else others.add(new HeapItem(item, h));
 				}
 			}
@@ -515,8 +567,9 @@ public class SeedFinder {
 			addTextItems("Rings", rings, builder);
 			addTextItems("Artifacts", artifacts, builder);
 			addTextItems("Wands", wands, builder);
+			addTextItems("Missiles", missiles, builder);
 			if (!Options.skipConsumables) addTextItems("Other", others, builder);
-			out.print(builder.toString());
+			out.print(builder);
 
 			Dungeon.depth++;
 		}
@@ -524,10 +577,4 @@ public class SeedFinder {
 		out.close();
 	}
 
-	private void printHelp(){
-		System.err.println("Usage: find (floors) (condition) (item_list_file) (output_file) [starting_seed] [ending_seed] <option_flags>");
-		System.err.println("scan (floors) (seed) [output_file] <option_flags>");
-		System.err.println("for help visit https://github.com/ifritdiezel/is-seedfinder#how-to-use");
-		System.exit(1);
-	}
 }
