@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -93,6 +94,7 @@ public class RotGardenRoom extends SpecialRoom {
 	private static void placePlant(Level level, int pos, Mob plant){
 		plant.pos = pos;
 		level.mobs.add( plant );
+		level.drop(new Rotberry.Seed(), pos);
 
 		for(int i : PathFinder.NEIGHBOURS8) {
 			if (level.map[pos + i] == Terrain.GRASS){

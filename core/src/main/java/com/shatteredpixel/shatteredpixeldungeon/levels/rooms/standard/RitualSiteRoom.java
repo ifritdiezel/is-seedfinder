@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
@@ -66,6 +67,7 @@ public class RitualSiteRoom extends StandardRoom {
 		level.addItemToSpawn(new CeremonialCandle());
 
 		CeremonialCandle.ritualPos = c.x + (level.width() * c.y);
+		level.drop(new Embers(), CeremonialCandle.ritualPos);
 	}
 
 	@Override

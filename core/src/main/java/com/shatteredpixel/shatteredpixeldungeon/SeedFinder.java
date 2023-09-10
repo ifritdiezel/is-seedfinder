@@ -176,6 +176,7 @@ public class SeedFinder {
 	}
 
 	private ArrayList<String> getItemList() {
+		if (Options.mode != Mode.FIND) return null;
 		ArrayList<String> itemList = new ArrayList<>();
 
 		try {
@@ -404,7 +405,7 @@ public class SeedFinder {
 
 		if (Options.condition == Condition.ANY) {
 			for (int i = 0; i < itemList.size(); i++) {
-				if (itemsFound[i] == true)
+				if (itemsFound[i])
 					return true;
 			}
 
@@ -413,7 +414,7 @@ public class SeedFinder {
 
 		else {
 			for (int i = 0; i < itemList.size(); i++) {
-				if (itemsFound[i] == false)
+				if (!itemsFound[i])
 					return false;
 			}
 
@@ -491,8 +492,6 @@ public class SeedFinder {
 			// list quest rewards
 			if (Ghost.Quest.armor != null) {
 				ArrayList<Item> rewards = new ArrayList<>();
-
-				//if (Ghost.Quest.glyph != null)
 				rewards.add(Ghost.Quest.armor.inscribe(Ghost.Quest.glyph).identify());
 				rewards.add(Ghost.Quest.weapon.enchant(Ghost.Quest.enchant).identify());
 
@@ -544,18 +543,15 @@ public class SeedFinder {
 			for (Heap h : heaps) {
 				for (Item item : h.items) {
 					item.identify();
-
-					if (h.type == Type.FOR_SALE) {
-						continue;
-					}
-					else if (blacklist.contains(item.getClass())) continue;
-					else if (item instanceof Scroll) scrolls.add(new HeapItem(item, h));
-					else if (item instanceof Potion) potions.add(new HeapItem(item, h));
+					if (blacklist.contains(item.getClass())) continue;
 					else if (item instanceof MeleeWeapon || item instanceof Armor) equipment.add(new HeapItem(item, h));
 					else if (item instanceof Ring) rings.add(new HeapItem(item, h));
 					else if (item instanceof Artifact) artifacts.add(new HeapItem(item, h));
 					else if (item instanceof Wand) wands.add(new HeapItem(item, h));
 					else if (item instanceof MissileWeapon) missiles.add(new HeapItem(item, h));
+					else if (h.type == Type.FOR_SALE && Options.quietMode) continue;
+					else if (item instanceof Scroll) scrolls.add(new HeapItem(item, h));
+					else if (item instanceof Potion) potions.add(new HeapItem(item, h));
 					else others.add(new HeapItem(item, h));
 				}
 			}
