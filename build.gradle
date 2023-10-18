@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        //the R8 version bundled with AGP 8.1.0+ causes crashes on very old Android versions
         classpath 'com.android.tools.build:gradle:8.0.2'
     }
 }
@@ -14,8 +15,8 @@ allprojects {
         appName = 'Shattered Pixel Dungeon'
         appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
 
-        appVersionCode = 736
-        appVersionName = '2.1.4'
+        appVersionCode = 753
+        appVersionName = '2.2.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
