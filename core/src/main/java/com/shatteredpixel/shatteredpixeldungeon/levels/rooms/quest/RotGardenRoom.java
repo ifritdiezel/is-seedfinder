@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -102,6 +103,7 @@ public class RotGardenRoom extends SpecialRoom {
 		}
 		int heartPos = Random.element(candidates);
 		placePlant(level, heartPos, new RotHeart());
+		level.drop(new Rotberry.Seed(), heartPos);
 
 		//place up to 6 lashers in such a way that there is always a safe path to the heart
 		boolean[] newPassable = Arrays.copyOf(passable, passable.length);
