@@ -133,8 +133,9 @@ public class SeedFinder {
 		}
 
 		if (args.length == 0){
+			System.out.println("(ignore the warnings above)");
 			formatter.printHelp("is-seedfinder", options);
-			System.out.println("test");
+			System.out.println("usage example: java -jar seedfinder.jar -mode find -items in.txt");
 			System.exit(1);
 		}
 
@@ -164,7 +165,7 @@ public class SeedFinder {
 
 		Options.itemListFile = line.getOptionValue("items");
 
-		if(line.hasOption("output")) Options.outputFile = line.getOptionValue("output", "stdout");
+		Options.outputFile = line.getOptionValue("output", "stdout");
 		if (Options.outputFile.equals("stdout") && Options.mode == Mode.FIND) Options.outputFile = "out.txt";
 
 		if(line.hasOption("q")) Options.quietMode = true;
