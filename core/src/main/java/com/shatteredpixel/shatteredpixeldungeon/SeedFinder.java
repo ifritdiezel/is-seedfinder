@@ -469,7 +469,6 @@ public class SeedFinder {
 
 		for (int i = 0; i < floors; i++) {
 
-			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
 
 			Level l = Dungeon.newLevel();
 
@@ -477,6 +476,8 @@ public class SeedFinder {
 				Dungeon.depth++;
 				continue;
 			}
+
+			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
 
 			ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
 			StringBuilder builder = new StringBuilder();
