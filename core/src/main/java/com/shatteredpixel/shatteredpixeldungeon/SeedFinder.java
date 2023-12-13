@@ -161,8 +161,7 @@ public class SeedFinder {
 
 		Options.startingSeed = Long.parseLong(line.getOptionValue("start", "0"));
 		Options.endingSeed = Long.parseLong(line.getOptionValue("end", "5429503678975"));
-		Options.seed = Long.parseLong(line.getOptionValue("seed", "0"));
-
+		Options.seed = DungeonSeed.convertFromText(line.getOptionValue("seed", "0"));
 		Options.itemListFile = line.getOptionValue("items");
 
 		Options.outputFile = line.getOptionValue("output", "stdout");
