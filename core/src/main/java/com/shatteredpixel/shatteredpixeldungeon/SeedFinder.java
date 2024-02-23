@@ -18,6 +18,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
@@ -462,7 +466,7 @@ public class SeedFinder {
 		Dungeon.init();
 
 		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
-				Embers.class, CeremonialCandle.class, Pickaxe.class);
+				Embers.class, CeremonialCandle.class, Pickaxe.class, VelvetPouch.class, ScrollHolder.class, PotionBandolier.class, MagicalHolster.class);
 
 		out.printf("Items for seed %s (%d):\n" + (Options.compactOutput ? "":"\n"), DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 
