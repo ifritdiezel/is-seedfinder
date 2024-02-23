@@ -7,6 +7,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GoldenMimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Statue;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
@@ -528,6 +529,22 @@ public class SeedFinder {
 				}
 				if (!Options.compactOutput) builder.append("\n");
 				addTextQuest("* Wandmaker quest rewards", rewards, builder);
+			}
+
+			if (Blacksmith.Quest.Type() != 0) {
+				builder.append("Blacksmith quest type: ");
+				switch (Blacksmith.Quest.Type()) {
+					case 1: default:
+						builder.append("crystal\n");
+						break;
+					case 2:
+						builder.append("gnoll\n");
+						break;
+					case 3:
+						builder.append("fungi\n");
+						break;
+
+				}
 			}
 
 			if (Imp.Quest.reward != null) {
