@@ -101,10 +101,12 @@ public class SeedFinder {
 
 	List<Class<? extends Item>> blacklist;
 	ArrayList<String> itemList;
+	ArrayList<ArrayList<String>> itemMultiList = new ArrayList<>();;
+	ArrayList<Integer> floorList = new ArrayList<>();
+
 
 	// TODO: make it parse the item list directly from the arguments
 	private void parseArgs(String[] args) {
-
 		final org.apache.commons.cli.Options options = new org.apache.commons.cli.Options();
 
 		options.addOption(new Option("mode", true, "scan/find/test"));
@@ -180,15 +182,22 @@ public class SeedFinder {
 		if(line.hasOption("d")) Options.intoDarknessOn = true;
 	}
 
-	private ArrayList<String> getItemList() {
+	private ArrayList<ArrayList<String>> getItemMultiList() {
 		if (Options.mode != Mode.FIND) return null;
-		ArrayList<String> itemList = new ArrayList<>();
+		int curItemList = 0;
+		floorList.add(Options.floors);
+		itemMultiList.add(new ArrayList<String>());
 
 		try {
 			Scanner scanner = new Scanner(new File(Options.itemListFile));
-
 			while (scanner.hasNextLine()) {
-				itemList.add(scanner.nextLine());
+				String curNextLine = scanner.nextLine();
+				if (curNextLine.startsWith("multirange")) {
+					curItemList++;
+					itemMultiList.add(new ArrayList<String>());
+					floorList.add(Integer.valueOf(curNextLine.split(" ")[1].trim()));
+				}
+				else itemMultiList.get(curItemList).add(curNextLine);
 			}
 
 			scanner.close();
@@ -197,7 +206,9 @@ public class SeedFinder {
 			e.printStackTrace();
 		}
 
-		return itemList;
+
+
+		return itemMultiList;
 	}
 
 	private void addTextItems(String caption, ArrayList<HeapItem> items, StringBuilder builder) {
@@ -281,7 +292,13 @@ public class SeedFinder {
 			return;
 		}
 
-		itemList = getItemList();
+		getItemMultiList();
+		int highestFloor = 0;
+		for (int i = 0; i < floorList.size(); i++){
+			if (floorList.get(i) > highestFloor) highestFloor = floorList.get(i);
+		}
+		Options.floors = highestFloor;
+
 		int tofind = Options.seedsToFind;
 
 		for (long i = Options.startingSeed; i < Options.endingSeed && tofind != 0; i++) {
@@ -334,7 +351,7 @@ public class SeedFinder {
 		return heaps;
 	}
 
-	private boolean testSeed(String seed, int floors) {
+	private boolean testSeed(String seed, int highestFloor) {
 		SPDSettings.customSeed(seed);
 		int chals = 0;
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
@@ -344,9 +361,16 @@ public class SeedFinder {
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
 
-		boolean[] itemsFound = new boolean[itemList.size()];
+		//boolean[][] itemsFound = new boolean[itemList.size()][];
+		ArrayList<ArrayList<Boolean>> itemsFound = new ArrayList<>();
+		for (int i = 0; i < itemMultiList.size(); i++){
+			itemsFound.add(new ArrayList<>());
+			for (int j = 0; j < itemMultiList.get(i).size(); j++){
+				itemsFound.get(i).add(false);
+			}
+		}
 
-		for (int i = 0; i < floors; i++) {
+		for (int i = 0; i < highestFloor; i++) {
 			Level l = Dungeon.newLevel();
 
 			boolean crystalChestFound = false;
@@ -355,11 +379,14 @@ public class SeedFinder {
 			if(Dungeon.depth % 5 != 0) {
 
 				if (l.sacrificeRoomPrize != null){
-				for (int j = 0; j < itemList.size(); j++) {
-					if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemList.get(j))) {
-						if (!itemsFound[j]) {
-							itemsFound[j] = true;
-							break;
+				for (int j = 0; j < itemMultiList.size(); j++) {
+					for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+						if (floorList.get(j) < Dungeon.depth) continue;
+						if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+							if (!itemsFound.get(j).get(z)) {
+								itemsFound.get(j).set(z, true);
+								break;
+							}
 						}
 					}
 				}
@@ -372,14 +399,17 @@ public class SeedFinder {
 					for (Item item : h.items) {
 						item.identify();
 
-						for (int j = 0; j < itemList.size(); j++) {
-							if (crystalChestFound && h.type == Type.CRYSTAL_CHEST) continue;
-							if (item.title().toLowerCase().contains(itemList.get(j))) {
-								if (!itemsFound[j]) {
-									itemsFound[j] = true;
-									if (item.questItem) questItemRequested = true;
-									if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
-									break;
+						for (int j = 0; j < itemMultiList.size(); j++) {
+							for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+								if (floorList.get(j) < Dungeon.depth) continue;
+								if (crystalChestFound && h.type == Type.CRYSTAL_CHEST) continue;
+								if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+									if (!itemsFound.get(j).get(z)) {
+										itemsFound.get(j).set(z, true);
+										if (item.questItem) questItemRequested = true;
+										if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
+										break;
+									}
 								}
 							}
 						}
@@ -390,14 +420,16 @@ public class SeedFinder {
 				for (Item item : rewards) {
 					if (questItemRequested) break;
 					item.identify();
-					for (int j = 0; j < itemList.size(); j++) {
-						if (questRewardFound) continue;
-
-						if (item.title().toLowerCase().contains(itemList.get(j))) {
-							if (!itemsFound[j]) {
-								itemsFound[j] = true;
-								questRewardFound = true;
-								break;
+					for (int j = 0; j < itemMultiList.size(); j++) {
+						for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+							if (floorList.get(j) < Dungeon.depth) continue;
+							if (questRewardFound) continue;
+							if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+								if (!itemsFound.get(j).get(z)) {
+									itemsFound.get(j).set(z, true);
+									questRewardFound = true;
+									break;
+								}
 							}
 						}
 					}
@@ -409,18 +441,22 @@ public class SeedFinder {
 
 
 		if (Options.condition == Condition.ANY) {
-			for (int i = 0; i < itemList.size(); i++) {
-				if (itemsFound[i])
-					return true;
+			for (int j = 0; j < itemMultiList.size(); j++) {
+				for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+					if (itemsFound.get(j).get(z))
+						return true;
+				}
 			}
 
 			return false;
 		}
 
 		else {
-			for (int i = 0; i < itemList.size(); i++) {
-				if (!itemsFound[i])
-					return false;
+			for (int j = 0; j < itemMultiList.size(); j++) {
+				for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+					if (!itemsFound.get(j).get(z))
+						return false;
+				}
 			}
 
 			return true;
