@@ -378,6 +378,7 @@ public class SeedFinder {
 			boolean questItemRequested = false;
 			if(Dungeon.depth % 5 != 0) {
 
+				boolean itemFound = false;
 				if (l.sacrificeRoomPrize != null){
 				for (int j = 0; j < itemMultiList.size(); j++) {
 					for (int z = 0; z < itemMultiList.get(j).size(); z++) {
@@ -385,10 +386,12 @@ public class SeedFinder {
 						if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 							if (!itemsFound.get(j).get(z)) {
 								itemsFound.get(j).set(z, true);
+								itemFound = true;
 								break;
 							}
 						}
 					}
+					if (itemFound) break;
 				}
 				}
 
@@ -398,7 +401,7 @@ public class SeedFinder {
 				for (Heap h : heaps) {
 					for (Item item : h.items) {
 						item.identify();
-
+						itemFound = false;
 						for (int j = 0; j < itemMultiList.size(); j++) {
 							for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 								if (floorList.get(j) < Dungeon.depth) continue;
@@ -406,12 +409,14 @@ public class SeedFinder {
 								if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 									if (!itemsFound.get(j).get(z)) {
 										itemsFound.get(j).set(z, true);
+										itemFound = true;
 										if (item.questItem) questItemRequested = true;
 										if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
 										break;
 									}
 								}
 							}
+							if (itemFound) break;
 						}
 					}
 				}
@@ -420,6 +425,7 @@ public class SeedFinder {
 				for (Item item : rewards) {
 					if (questItemRequested) break;
 					item.identify();
+					itemFound = false;
 					for (int j = 0; j < itemMultiList.size(); j++) {
 						for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 							if (floorList.get(j) < Dungeon.depth) continue;
@@ -427,11 +433,13 @@ public class SeedFinder {
 							if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 								if (!itemsFound.get(j).get(z)) {
 									itemsFound.get(j).set(z, true);
+									itemFound = true;
 									questRewardFound = true;
 									break;
 								}
 							}
 						}
+						if (itemFound) break;
 					}
 				}
 			}
