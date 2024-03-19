@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -86,6 +87,8 @@ public class SeedFinder {
 		public static boolean intoDarknessOn;
 		public static boolean compactOutput;
 		public static boolean skipConsumables;
+
+		public static boolean uncurse;
 	}
 
 
@@ -128,6 +131,7 @@ public class SeedFinder {
 		options.addOption(new Option("s", "skip_consumables", false, "don't print consumables in the report"));
 		options.addOption(new Option("b", "barren_land", false, "enable Barren Land (generation-altering challenge)"));
 		options.addOption(new Option("d", "into_darkness", false, "enable Into Darkness (generation-altering challenge)"));
+		options.addOption(new Option("u", "uncurse", false, "only finds seeds with enough scrolls of remove curse to uncurse all requested items"));
 
 		HelpFormatter formatter = new HelpFormatter();
 
@@ -180,6 +184,7 @@ public class SeedFinder {
 		if(line.hasOption("s")) Options.skipConsumables = true;
 		if(line.hasOption("b")) Options.barrenOn = true;
 		if(line.hasOption("d")) Options.intoDarknessOn = true;
+		if(line.hasOption("u")) Options.uncurse = true;
 	}
 
 	private ArrayList<ArrayList<String>> getItemMultiList() {
@@ -357,6 +362,8 @@ public class SeedFinder {
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
 		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
 		if (Options.intoDarknessOn) chals += Challenges.DARKNESS;
+		int cursedRequestedItems = 0;
+		int removeCurseScrolls = 0;
 		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
@@ -387,6 +394,8 @@ public class SeedFinder {
 							if (!itemsFound.get(j).get(z)) {
 								itemsFound.get(j).set(z, true);
 								itemFound = true;
+								if (l.sacrificeRoomPrize.cursed) cursedRequestedItems++;
+								if (l.sacrificeRoomPrize instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 								break;
 							}
 						}
@@ -410,6 +419,8 @@ public class SeedFinder {
 									if (!itemsFound.get(j).get(z)) {
 										itemsFound.get(j).set(z, true);
 										itemFound = true;
+										if (item.cursed) cursedRequestedItems++;
+										if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 										if (item.questItem) questItemRequested = true;
 										if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
 										break;
@@ -434,6 +445,8 @@ public class SeedFinder {
 								if (!itemsFound.get(j).get(z)) {
 									itemsFound.get(j).set(z, true);
 									itemFound = true;
+									if (item.cursed) cursedRequestedItems++;
+									if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 									questRewardFound = true;
 									break;
 								}
@@ -446,7 +459,7 @@ public class SeedFinder {
 			Dungeon.depth++;
 		}
 
-
+		if (Options.uncurse && removeCurseScrolls < cursedRequestedItems) return false;
 
 		if (Options.condition == Condition.ANY) {
 			for (int j = 0; j < itemMultiList.size(); j++) {
