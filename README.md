@@ -9,8 +9,8 @@ New feature summary:
 - Skips every boss floor to slightly improve performance
 - Fixes an issue with not finding armor from armored statues
 - Guarantees all items are obtainable by only counting 1 quest reward/crystal chest per floor
-- Checks quest rewards
-- Supports enabling generation-altering challenges before scanning
+- Checks quest rewards and reports more info about quests
+- Supports requesting multiple ranges, e.g. might before floor 4 and glaive before floor 9
 - (arguably) Improved output formatting with extra options
 - Some extra output options for ease of automation (the [discord bot](https://github.com/ifritdiezel/is-seedfinder-bot))
 
@@ -31,6 +31,7 @@ java -jar seedfinder.jar -mode scan -floors 24 -seed 123456789
 ## Finder mode
 
 Finds seeds containing specified items. Start seedfinder without arguments to see a list of extra arguments.
+To use multiple ranges, add `multirange x` as an item, where x is the desired floor. All items **after** this argument will be added to a new range. 
 
 ```
 example: java -jar seedfinder.jar -mode find -floors 9 -items in.txt -output out.txt 
