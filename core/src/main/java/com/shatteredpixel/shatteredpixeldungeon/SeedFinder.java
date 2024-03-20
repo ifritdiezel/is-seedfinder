@@ -390,6 +390,7 @@ public class SeedFinder {
 				for (int j = 0; j < itemMultiList.size(); j++) {
 					for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 						if (floorList.get(j) < Dungeon.depth) continue;
+						if (l.sacrificeRoomPrize instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 						if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 							if (!itemsFound.get(j).get(z)) {
 								itemsFound.get(j).set(z, true);
@@ -415,12 +416,12 @@ public class SeedFinder {
 							for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 								if (floorList.get(j) < Dungeon.depth) continue;
 								if (crystalChestFound && h.type == Type.CRYSTAL_CHEST) continue;
+								if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 								if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 									if (!itemsFound.get(j).get(z)) {
 										itemsFound.get(j).set(z, true);
 										itemFound = true;
 										if (item.cursed) cursedRequestedItems++;
-										if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 										if (item.questItem) questItemRequested = true;
 										if (h.type == Type.CRYSTAL_CHEST) crystalChestFound = true;
 										break;
@@ -441,12 +442,12 @@ public class SeedFinder {
 						for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 							if (floorList.get(j) < Dungeon.depth) continue;
 							if (questRewardFound) continue;
+							if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 							if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
 								if (!itemsFound.get(j).get(z)) {
 									itemsFound.get(j).set(z, true);
 									itemFound = true;
 									if (item.cursed) cursedRequestedItems++;
-									if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
 									questRewardFound = true;
 									break;
 								}
