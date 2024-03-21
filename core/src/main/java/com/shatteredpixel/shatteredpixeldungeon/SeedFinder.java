@@ -89,6 +89,7 @@ public class SeedFinder {
 		public static boolean skipConsumables;
 
 		public static boolean uncurse;
+		public static boolean exactUpgrades;
 	}
 
 
@@ -105,6 +106,7 @@ public class SeedFinder {
 	List<Class<? extends Item>> blacklist;
 	ArrayList<String> itemList;
 	ArrayList<ArrayList<String>> itemMultiList = new ArrayList<>();;
+	ArrayList<ArrayList<Integer>> itemUpgradeMultiList = new ArrayList<>();;
 	ArrayList<Integer> floorList = new ArrayList<>();
 
 
@@ -131,6 +133,7 @@ public class SeedFinder {
 		options.addOption(new Option("s", "skip_consumables", false, "don't print consumables in the report"));
 		options.addOption(new Option("b", "barren_land", false, "enable Barren Land (generation-altering challenge)"));
 		options.addOption(new Option("d", "into_darkness", false, "enable Into Darkness (generation-altering challenge)"));
+		options.addOption(new Option("e", "exact_upgrades", false, "only detect items when they're exactly the specified level"));
 		options.addOption(new Option("u", "uncurse", false, "only finds seeds with enough scrolls of remove curse to uncurse all requested items"));
 
 		HelpFormatter formatter = new HelpFormatter();
@@ -192,6 +195,7 @@ public class SeedFinder {
 		int curItemList = 0;
 		floorList.add(Options.floors);
 		itemMultiList.add(new ArrayList<String>());
+		itemUpgradeMultiList.add(new ArrayList<Integer>());
 
 		try {
 			Scanner scanner = new Scanner(new File(Options.itemListFile));
@@ -200,9 +204,27 @@ public class SeedFinder {
 				if (curNextLine.startsWith("multirange")) {
 					curItemList++;
 					itemMultiList.add(new ArrayList<String>());
+					itemUpgradeMultiList.add(new ArrayList<Integer>());
 					floorList.add(Integer.valueOf(curNextLine.split(" ")[1].trim()));
 				}
-				else itemMultiList.get(curItemList).add(curNextLine);
+				else {
+					String[] splitByUpgrades = curNextLine.split("\\+");
+					if (curNextLine.contains("+")){
+						if (splitByUpgrades.length > 1) {
+							String afterplus = splitByUpgrades[1].trim();
+							if (isInteger(afterplus)) {
+								itemUpgradeMultiList.get(curItemList).add(Integer.valueOf(afterplus));
+							} else if (Objects.equals(afterplus, "")) itemUpgradeMultiList.get(curItemList).add(1);
+							else {
+								System.out.println("error: upgrade level not an integer for item " + curNextLine);
+								System.exit(1);
+							}
+						} else itemUpgradeMultiList.get(curItemList).add(1);
+					}
+					else itemUpgradeMultiList.get(curItemList).add(null);
+					if (splitByUpgrades.length > 0) itemMultiList.get(curItemList).add(splitByUpgrades[0].trim());
+					else itemMultiList.get(curItemList).add("");
+				}
 			}
 
 			scanner.close();
@@ -391,7 +413,11 @@ public class SeedFinder {
 					for (int z = 0; z < itemMultiList.get(j).size(); z++) {
 						if (floorList.get(j) < Dungeon.depth) continue;
 						if (l.sacrificeRoomPrize instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
-						if (l.sacrificeRoomPrize.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+						if (
+								l.sacrificeRoomPrize.title().toLowerCase().contains(itemMultiList.get(j).get(z))
+								&& (itemUpgradeMultiList.get(j).get(z) == null || (itemUpgradeMultiList.get(j).get(z) <= l.sacrificeRoomPrize.level()))
+								&& (!Options.exactUpgrades || itemUpgradeMultiList.get(j).get(z) == l.sacrificeRoomPrize.level())
+						) {
 							if (!itemsFound.get(j).get(z)) {
 								itemsFound.get(j).set(z, true);
 								itemFound = true;
@@ -417,7 +443,11 @@ public class SeedFinder {
 								if (floorList.get(j) < Dungeon.depth) continue;
 								if (crystalChestFound && h.type == Type.CRYSTAL_CHEST) continue;
 								if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
-								if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+								if (
+										item.title().toLowerCase().contains(itemMultiList.get(j).get(z))
+										&& (itemUpgradeMultiList.get(j).get(z) == null || (itemUpgradeMultiList.get(j).get(z) <= item.level()))
+										&& (!Options.exactUpgrades || itemUpgradeMultiList.get(j).get(z) == item.level())
+								){
 									if (!itemsFound.get(j).get(z)) {
 										itemsFound.get(j).set(z, true);
 										itemFound = true;
@@ -443,7 +473,11 @@ public class SeedFinder {
 							if (floorList.get(j) < Dungeon.depth) continue;
 							if (questRewardFound) continue;
 							if (item instanceof ScrollOfRemoveCurse) removeCurseScrolls++;
-							if (item.title().toLowerCase().contains(itemMultiList.get(j).get(z))) {
+							if (
+									item.title().toLowerCase().contains(itemMultiList.get(j).get(z))
+											&& (itemUpgradeMultiList.get(j).get(z) == null || (itemUpgradeMultiList.get(j).get(z) <= item.level()))
+											&& (!Options.exactUpgrades || itemUpgradeMultiList.get(j).get(z) == item.level())
+							) {
 								if (!itemsFound.get(j).get(z)) {
 									itemsFound.get(j).set(z, true);
 									itemFound = true;
@@ -652,5 +686,30 @@ public class SeedFinder {
 
 		out.close();
 	}
+
+	public static boolean isInteger(String str) {
+		if (str == null) {
+			return false;
+		}
+		int length = str.length();
+		if (length == 0) {
+			return false;
+		}
+		int i = 0;
+		if (str.charAt(0) == '-') {
+			if (length == 1) {
+				return false;
+			}
+			i = 1;
+		}
+		for (; i < length; i++) {
+			char c = str.charAt(i);
+			if (c < '0' || c > '9') {
+				return false;
+			}
+		}
+		return true;
+	}
+
 
 }
