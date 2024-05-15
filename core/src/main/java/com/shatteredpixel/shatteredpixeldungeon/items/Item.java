@@ -295,6 +295,17 @@ public class Item implements Bundlable {
 			return split;
 		}
 	}
+
+	public Item duplicate(){
+		Item dupe = Reflection.newInstance(getClass());
+		if (dupe == null){
+			return null;
+		}
+		Bundle copy = new Bundle();
+		this.storeInBundle(copy);
+		dupe.restoreFromBundle(copy);
+		return dupe;
+	}
 	
 	public final Item detach( Bag container ) {
 		
@@ -345,7 +356,7 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass();
+		return getClass() == item.getClass();
 	}
 
 	protected void onDetach(){}
