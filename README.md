@@ -38,16 +38,22 @@ example: java -jar seedfinder.jar -mode find -floors 9 -items in.txt -output out
 ```
 
 - **floors**: maximum depth to look for the items
-- **items**: file name containing a list of items, *one* item per line
+- **items**: file name containing a list of items, *one* item per line. Put it in the same folder with the .jar
 - **output**: file name where a scan of each seed will be written
 
-The entries in the item list need to be in english, all lowercase and can optionally specify the enchantment and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names.
+The entries in the item list need to be in English, all lowercase and can optionally specify the enchantment and the upgrade level, so both `projecting crossbow +3` and `sword` are valid item names. **Beware that item names should be EXACTLY as they appear in the game, NO liberties like misplacing words or numbers. There is no autocorrect.** 
+Example in.txt file:
+```
+mail armor of swiftness +2
+flail
+potion of experience
+potion of experience
+```
 
-The application will run until the set final seed is scanned or all the seeds have been tested by default (virtually indefinitely), so stop it using ctrl-C when you have found enough seeds for your needs.
-If you want to automatically stop seedfinder after enough seeds are found, use the **-seeds** argument to specify the amount.
+The application will run until the set final seed is scanned or all the seeds have been tested by default (virtually indefinitely), so stop it using Ctrl+C when you have found enough seeds.
+If you want to automatically stop seedfinder after enough seeds are found, use the **-seeds 1** argument to specify the amount.
 
 Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
 
 # How to build
 The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release. 
-A modified [patch](https://github.com/ifritdiezel/is-seedfinder/blob/master/is-seedfinder.patch) to apply to an existing project is also available in the root directory.
