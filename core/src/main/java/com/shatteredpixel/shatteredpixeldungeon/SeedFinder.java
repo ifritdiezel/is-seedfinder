@@ -13,6 +13,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
+import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
@@ -399,6 +401,28 @@ public class SeedFinder {
 			}
 		}
 
+		boolean trinketFound = false;
+		for (int tr = 0; tr < 3; tr++) {
+			Trinket trinket = (Trinket) Generator.random(Generator.Category.TRINKET);
+			for (int j = 0; j < itemMultiList.size(); j++) {
+				for (int z = 0; z < itemMultiList.get(j).size(); z++) {
+					if (floorList.get(j) < Dungeon.depth) continue;
+					if (
+							trinket.title().toLowerCase().contains(itemMultiList.get(j).get(z))
+							&& itemUpgradeMultiList.get(j).get(z) == null
+					) {
+						if (!itemsFound.get(j).get(z)) {
+							itemsFound.get(j).set(z, true);
+							trinketFound = true;
+							break;
+						}
+					}
+				}
+				if (trinketFound) break;
+			}
+		}
+
+
 		for (int i = 0; i < highestFloor; i++) {
 			Level l = Dungeon.newLevel();
 
@@ -563,6 +587,15 @@ public class SeedFinder {
 
 		out.printf("Items for seed %s (%d):\n" + (Options.compactOutput ? "":"\n"), DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 
+
+		{
+			out.printf("* Trinkets:\n");
+			for (int tr = 0; tr < 3; tr++) {
+				out.printf(" * " + Generator.random(Generator.Category.TRINKET).title() + "\n");
+			}
+			if (!Options.compactOutput) out.printf("\n");
+		}
+
 		for (int i = 0; i < floors; i++) {
 
 
@@ -623,7 +656,7 @@ public class SeedFinder {
 				addTextQuest("* Wandmaker quest rewards", rewards, builder);
 			}
 
-			if (Blacksmith.Quest.Type() != 0) {
+			if (Blacksmith.Quest.Type() != 0 && !Blacksmith.Quest.completed()) {
 				builder.append("Blacksmith quest type: ");
 				switch (Blacksmith.Quest.Type()) {
 					case 1: default:
@@ -635,8 +668,12 @@ public class SeedFinder {
 					case 3:
 						builder.append("fungi\n");
 						break;
-
 				}
+				String[] nameArray = Blacksmith.Quest.smithRewards.stream()
+						.map(Item::title)
+						.toArray(String[]::new);
+				builder.append("Blacksmith quest smithing items: ").append(String.join(", ", nameArray)).append("\n");
+				Blacksmith.Quest.complete();
 			}
 
 			if (Imp.Quest.reward != null) {

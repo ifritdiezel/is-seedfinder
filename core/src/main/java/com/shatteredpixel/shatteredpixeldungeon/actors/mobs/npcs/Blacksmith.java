@@ -455,22 +455,24 @@ public class Blacksmith extends NPC {
 				rewardLevel = 3;
 			}
 
-			for (Item i : smithRewards){
-				i.level(rewardLevel);
-				if (i instanceof Weapon) {
-					((Weapon) i).enchant(null);
-				} else if (i instanceof Armor){
-					((Armor) i).inscribe(null);
-				}
-				i.cursed = false;
-			}
-
 			// 30% base chance to be enchanted, stored separately so status isn't revealed early
 			float enchantRoll = Random.Float();
 			if (enchantRoll <= 0.3f * ParchmentScrap.enchantChanceMultiplier()){
 				smithEnchant = Weapon.Enchantment.random();
 				smithGlyph = Armor.Glyph.random();
 			}
+
+			for (Item i : smithRewards){
+				i.identify().level(rewardLevel);
+				if (i instanceof Weapon) {
+					((Weapon) i).enchant(smithEnchant);
+				} else if (i instanceof Armor){
+					((Armor) i).inscribe(smithGlyph);
+				}
+				i.cursed = false;
+			}
+
+
 
 		}
 
@@ -499,31 +501,11 @@ public class Blacksmith extends NPC {
 		}
 
 		public static boolean completed(){
-			return given && completed;
+			return completed;
 		}
 
 		public static void complete(){
 			completed = true;
-
-			favor = 0;
-			DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
-			if (gold != null){
-				favor += Math.min(2000, gold.quantity()*50);
-				gold.detachAll(Dungeon.hero.belongings.backpack);
-			}
-
-			Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
-			if (pick.isEquipped(Dungeon.hero)) {
-				boolean wasCursed = pick.cursed;
-				pick.cursed = false; //so that it can always be removed
-				pick.doUnequip(Dungeon.hero, false);
-				pick.cursed = wasCursed;
-			}
-			pick.detach(Dungeon.hero.belongings.backpack);
-			Quest.pickaxe = pick;
-
-			if (bossBeaten) favor += 1000;
-
 			Statistics.questScores[2] = favor;
 		}
 
