@@ -21,31 +21,21 @@
 
 package com.watabou.utils;
 
-import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.watabou.noosa.Game;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class Bundle {
 
@@ -489,60 +479,61 @@ public class Bundle {
 	private static final int GZIP_BUFFER = 1024*4; //4 kb
 
 	public static Bundle read( InputStream stream ) throws IOException {
+		return new Bundle();
 
-		try {
-			if (!stream.markSupported()){
-				stream = new BufferedInputStream( stream, 2 );
-			}
-
-			//determines if we're reading a regular, or compressed file
-			stream.mark( 2 );
-			byte[] header = new byte[2];
-			stream.read( header );
-			stream.reset();
-
-			//GZIP header is 0x1f8b
-			if( header[ 0 ] == (byte) 0x1f && header[ 1 ] == (byte) 0x8b ) {
-				stream = new GZIPInputStream( stream, GZIP_BUFFER );
-			}
-
-			//JSONTokenizer only has a string-based constructor on Android/iOS
-			BufferedReader reader = new BufferedReader( new InputStreamReader( stream ));
-			StringBuilder jsonBuilder = new StringBuilder();
-
-			String line;
-			while ((line = reader.readLine()) != null) {
-				jsonBuilder.append(line);
-				jsonBuilder.append("\n");
-			}
-			String jsonString = jsonBuilder.toString();
-
-			Object json;
-			try {
-				json = new JSONTokener(jsonString).nextValue();
-			} catch (Exception e){
-				//TODO support for v1.1.X saves has been dropped, can probably remove this soon
-				//if the string can't be tokenized, it may be written by v1.1.X, which used libGDX JSON.
-				// Some of these are written in a 'minified' format, some have duplicate keys.
-				// We read them in with the libGDX JSON code, fix duplicates, write as full JSON
-				// and then try to read again with org.json
-				Game.reportException(e);
-				JsonValue gdxJSON = new JsonReader().parse(jsonString);
-				killDuplicateKeysInLibGDXJSON(gdxJSON);
-				json = new JSONTokener(gdxJSON.prettyPrint(JsonWriter.OutputType.json, 0)).nextValue();
-			}
-			reader.close();
-
-			//if the data is an array, put it in a fresh object with the default key
-			if (json instanceof JSONArray){
-				json = new JSONObject().put( DEFAULT_KEY, json );
-			}
-
-			return new Bundle( (JSONObject) json );
-		} catch (Exception e) {
-			Game.reportException(e);
-			throw new IOException();
-		}
+//		try {
+//			if (!stream.markSupported()){
+//				stream = new BufferedInputStream( stream, 2 );
+//			}
+//
+//			//determines if we're reading a regular, or compressed file
+//			stream.mark( 2 );
+//			byte[] header = new byte[2];
+//			stream.read( header );
+//			stream.reset();
+//
+//			//GZIP header is 0x1f8b
+//			if( header[ 0 ] == (byte) 0x1f && header[ 1 ] == (byte) 0x8b ) {
+//				stream = new GZIPInputStream( stream, GZIP_BUFFER );
+//			}
+//
+//			//JSONTokenizer only has a string-based constructor on Android/iOS
+//			BufferedReader reader = new BufferedReader( new InputStreamReader( stream ));
+//			StringBuilder jsonBuilder = new StringBuilder();
+//
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				jsonBuilder.append(line);
+//				jsonBuilder.append("\n");
+//			}
+//			String jsonString = jsonBuilder.toString();
+//
+//			Object json;
+//			try {
+//				json = new JSONTokener(jsonString).nextValue();
+//			} catch (Exception e){
+//				//TODO support for v1.1.X saves has been dropped, can probably remove this soon
+//				//if the string can't be tokenized, it may be written by v1.1.X, which used libGDX JSON.
+//				// Some of these are written in a 'minified' format, some have duplicate keys.
+//				// We read them in with the libGDX JSON code, fix duplicates, write as full JSON
+//				// and then try to read again with org.json
+//				Game.reportException(e);
+//				JsonValue gdxJSON = new JsonReader().parse(jsonString);
+//				killDuplicateKeysInLibGDXJSON(gdxJSON);
+//				json = new JSONTokener(gdxJSON.prettyPrint(JsonWriter.OutputType.json, 0)).nextValue();
+//			}
+//			reader.close();
+//
+//			//if the data is an array, put it in a fresh object with the default key
+//			if (json instanceof JSONArray){
+//				json = new JSONObject().put( DEFAULT_KEY, json );
+//			}
+//
+//			return new Bundle( (JSONObject) json );
+//		} catch (Exception e) {
+//			Game.reportException(e);
+//			throw new IOException();
+//		}
 	}
 
 	private static void killDuplicateKeysInLibGDXJSON(JsonValue val){
@@ -568,20 +559,21 @@ public class Bundle {
 	}
 
 	public static boolean write( Bundle bundle, OutputStream stream, boolean compressed ) {
-		try {
-			BufferedWriter writer;
-			if (compressed) writer = new BufferedWriter( new OutputStreamWriter( new GZIPOutputStream(stream, GZIP_BUFFER ) ) );
-			else writer = new BufferedWriter( new OutputStreamWriter( stream ) );
-
-			//JSONObject.write does not exist on Android/iOS
-			writer.write(bundle.data.toString());
-			writer.close();
-
-			return true;
-		} catch (IOException e) {
-			Game.reportException(e);
-			return false;
-		}
+//		try {
+//			BufferedWriter writer;
+//			if (compressed) writer = new BufferedWriter( new OutputStreamWriter( new GZIPOutputStream(stream, GZIP_BUFFER ) ) );
+//			else writer = new BufferedWriter( new OutputStreamWriter( stream ) );
+//
+//			//JSONObject.write does not exist on Android/iOS
+//			writer.write(bundle.data.toString());
+//			writer.close();
+//
+//			return true;
+//		} catch (IOException e) {
+//			Game.reportException(e);
+//			return false;
+//		}
+		return true;
 	}
 	
 	public static void addAlias( Class<?> cl, String alias ) {

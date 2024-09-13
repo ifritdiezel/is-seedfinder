@@ -12,7 +12,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
-import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -24,13 +23,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.Pickaxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
@@ -317,7 +314,7 @@ public class SeedFinder {
 		}
 
 		if (Options.mode == Mode.SCAN) {
-			logSeedItems(Long.toString(Options.seed), Options.floors);
+			logSeedItems(Options.seed, Options.floors);
 			return;
 		}
 
@@ -331,9 +328,9 @@ public class SeedFinder {
 		int tofind = Options.seedsToFind;
 
 		for (long i = Options.startingSeed; i < Options.endingSeed && tofind != 0; i++) {
-			if (testSeed(Long.toString(i), Options.floors)) {
+			if (testSeed(i, Options.floors)) {
 				tofind--;
-				logSeedItems(Long.toString(i), Options.floors);
+				logSeedItems(i, Options.floors);
 				if (Options.quietMode) System.out.print(DungeonSeed.convertToCode(Dungeon.seed));
 				else System.out.printf("Found valid seed %s (%d)\n", DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 			}
@@ -380,8 +377,8 @@ public class SeedFinder {
 		return heaps;
 	}
 
-	private boolean testSeed(String seed, int highestFloor) {
-		SPDSettings.customSeed(seed);
+	private boolean testSeed(Long seed, int highestFloor) {
+		Dungeon.seed = seed;
 		int chals = 0;
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
 		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
@@ -562,7 +559,7 @@ public class SeedFinder {
 		return rewards;
 	}
 
-	private void logSeedItems(String seed, int floors) {
+	private void logSeedItems(Long seed, int floors) {
 		PrintWriter out = null;
 		OutputStream out_fd = System.out;
 
@@ -573,7 +570,7 @@ public class SeedFinder {
 			e.printStackTrace();
 		}
 
-		SPDSettings.customSeed(seed);
+		Dungeon.seed = (seed);
 		int chals = 0;
 		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
 		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
@@ -582,8 +579,8 @@ public class SeedFinder {
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
 
-		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class, CrystalKey.class, EnergyCrystal.class,
-				Embers.class, CeremonialCandle.class, Pickaxe.class, VelvetPouch.class, ScrollHolder.class, PotionBandolier.class, MagicalHolster.class);
+		blacklist = Arrays.asList(Gold.class, Dewdrop.class, IronKey.class, GoldenKey.class,
+				Embers.class, CeremonialCandle.class, VelvetPouch.class, ScrollHolder.class, PotionBandolier.class, MagicalHolster.class);
 
 		out.printf("Items for seed %s (%d):\n" + (Options.compactOutput ? "":"\n"), DungeonSeed.convertToCode(Dungeon.seed), Dungeon.seed);
 

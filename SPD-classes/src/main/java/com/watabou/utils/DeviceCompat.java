@@ -64,7 +64,7 @@ public class DeviceCompat {
 	}
 	
 	public static boolean isDebug(){
-		return true;
+		return false;
 	}
 	
 	public static void log( String tag, String message ){

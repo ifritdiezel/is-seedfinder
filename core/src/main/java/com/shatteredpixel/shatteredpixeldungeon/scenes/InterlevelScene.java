@@ -205,7 +205,7 @@ public class InterlevelScene extends PixelScene {
 			}
 		Random.popGenerator();
 		
-		if (DeviceCompat.isDebug()){
+		if (true){
 			fadeTime = 0f;
 		}
 

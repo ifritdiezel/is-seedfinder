@@ -277,7 +277,7 @@ public class SPDSettings extends GameSettings {
 	}
 
 	public static boolean supportNagged() {
-		return getBoolean(KEY_SUPPORT_NAGGED, false);
+		return true;
 	}
 
 	public static void victoryNagged( boolean value ) {
@@ -285,7 +285,7 @@ public class SPDSettings extends GameSettings {
 	}
 
 	public static boolean victoryNagged() {
-		return getBoolean(KEY_VICTORY_NAGGED, false);
+		return true;
 	}
 
 	//Input

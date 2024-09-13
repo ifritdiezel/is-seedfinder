@@ -52,10 +52,7 @@ public enum Holiday {
 	}
 
 	public static Holiday getCurrentHoliday(){
-		if (cached == null){
-			cached = getHolidayForDate((GregorianCalendar) GregorianCalendar.getInstance());
-		}
-		return cached;
+		return Holiday.NONE;
 	}
 
 	//requires a gregorian calendar
