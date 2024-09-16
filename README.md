@@ -1,7 +1,7 @@
 # IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
 
 Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).
-It can also display items found on a specific seed.
+It can also display items found on a specific seed **and a minimap of a seed with enemies and items**!
 
 New feature summary:
 - Specify the seed to start scanning with. Can be used to continue scanning after terminating the application or to run multiple instances to make use of multiple threads
@@ -13,6 +13,7 @@ New feature summary:
 - Supports requesting multiple ranges, e.g. might before floor 4 and glaive before floor 9
 - (arguably) Improved output formatting with extra options
 - Some extra output options for ease of automation (the [discord bot](https://github.com/ifritdiezel/is-seedfinder-bot))
+- Minimap rendering
 
 # How to use
 
@@ -21,12 +22,13 @@ New feature summary:
 Prints out all the items a given seed has.
 
 ```
-java -jar seedfinder.jar -mode scan -floors 24 -seed 123456789
+java -jar seedfinder.jar -mode scan -floors 24 -seed 123456789 -minimap EIT
 ```
 
 - **floors**: maximum depth to display
 - **seed**: dungeon seed to analyze
 - **output_file**: if specified, scan results will be written to this file instead of console
+- **minimap**: flag string (E)nemies/(I)tems/(T)errain features/(N)one. renders a map of each floor as unicode emoji
 
 ## Finder mode
 

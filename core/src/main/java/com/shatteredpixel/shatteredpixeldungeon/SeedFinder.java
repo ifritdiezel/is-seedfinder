@@ -1,5 +1,6 @@
 package com.shatteredpixel.shatteredpixeldungeon;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredStatue;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.CrystalMimic;
@@ -11,32 +12,48 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Ghost;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.items.Ankh;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
+import com.shatteredpixel.shatteredpixeldungeon.items.EnergyCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap.Type;
+import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
+import com.shatteredpixel.shatteredpixeldungeon.items.Torch;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
+import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CeremonialCandle;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
+import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
+import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Game;
 
@@ -89,6 +106,11 @@ public class SeedFinder {
 
 		public static boolean uncurse;
 		public static boolean exactUpgrades;
+
+		public static boolean renderMinimap;
+		public static boolean renderEnemies;
+		public static boolean renderItems;
+		public static boolean renderTerrain;
 	}
 
 
@@ -104,8 +126,8 @@ public class SeedFinder {
 
 	List<Class<? extends Item>> blacklist;
 	ArrayList<String> itemList;
-	ArrayList<ArrayList<String>> itemMultiList = new ArrayList<>();;
-	ArrayList<ArrayList<Integer>> itemUpgradeMultiList = new ArrayList<>();;
+	ArrayList<ArrayList<String>> itemMultiList = new ArrayList<>();
+	ArrayList<ArrayList<Integer>> itemUpgradeMultiList = new ArrayList<>();
 	ArrayList<Integer> floorList = new ArrayList<>();
 
 
@@ -134,6 +156,8 @@ public class SeedFinder {
 		options.addOption(new Option("d", "into_darkness", false, "enable Into Darkness (generation-altering challenge)"));
 		options.addOption(new Option("e", "exact_upgrades", false, "only detect items when they're exactly the specified level"));
 		options.addOption(new Option("u", "uncurse", false, "only finds seeds with enough scrolls of remove curse to uncurse all requested items"));
+
+		options.addOption(new Option("minimap", true, "flag string (E)nemies/(I)tems/(T)errain features/(N)one, e.g minimap EI, anything else for just passable tiles"));
 
 		HelpFormatter formatter = new HelpFormatter();
 
@@ -187,6 +211,14 @@ public class SeedFinder {
 		if(line.hasOption("b")) Options.barrenOn = true;
 		if(line.hasOption("d")) Options.intoDarknessOn = true;
 		if(line.hasOption("u")) Options.uncurse = true;
+
+		if(line.hasOption("e")) Options.exactUpgrades = true;
+
+		Options.renderMinimap = line.hasOption("minimap");
+		String minimapFlags = line.getOptionValue("minimap", "").toLowerCase();
+		if (minimapFlags.contains("e")) Options.renderEnemies = true;
+		if (minimapFlags.contains("i")) Options.renderItems = true;
+		if (minimapFlags.contains("t")) Options.renderTerrain = true;
 	}
 
 	private ArrayList<ArrayList<String>> getItemMultiList() {
@@ -399,7 +431,7 @@ public class SeedFinder {
 		}
 
 		boolean trinketFound = false;
-		for (int tr = 0; tr < 3; tr++) {
+		for (int tr = 0; tr < 4; tr++) {
 			Trinket trinket = (Trinket) Generator.random(Generator.Category.TRINKET);
 			for (int j = 0; j < itemMultiList.size(); j++) {
 				for (int z = 0; z < itemMultiList.get(j).size(); z++) {
@@ -572,9 +604,9 @@ public class SeedFinder {
 
 		Dungeon.seed = (seed);
 		int chals = 0;
-		if (Options.runesOn) chals += Challenges.NO_SCROLLS;
-		if (Options.barrenOn) chals += Challenges.NO_HERBALISM;
-		if (Options.intoDarknessOn) chals += Challenges.DARKNESS;
+		if (Options.runesOn) chals |= Challenges.NO_SCROLLS;
+		if (Options.barrenOn) chals |= Challenges.NO_HERBALISM;
+		if (Options.intoDarknessOn) chals |= Challenges.DARKNESS;
 		SPDSettings.challenges(chals);
 		GamesInProgress.selectedClass = HeroClass.WARRIOR;
 		Dungeon.init();
@@ -587,15 +619,13 @@ public class SeedFinder {
 
 		{
 			out.printf("* Trinkets:\n");
-			for (int tr = 0; tr < 3; tr++) {
+			for (int tr = 0; tr < 4; tr++) {
 				out.printf(" * " + Generator.random(Generator.Category.TRINKET).title() + "\n");
 			}
 			if (!Options.compactOutput) out.printf("\n");
 		}
 
 		for (int i = 0; i < floors; i++) {
-
-
 			Level l = Dungeon.newLevel();
 
 			if (Dungeon.depth % 5 == 0){
@@ -604,7 +634,15 @@ public class SeedFinder {
 			}
 
 			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
+			if (l.feeling != Level.Feeling.NONE) {
+				out.printf("Feeling: " + l.feeling.title());
+				out.printf("\n");
+			}
 
+			if (Options.renderMinimap) {
+				out.printf(levelEmojiMap(l));
+				out.printf("\n\n");
+			}
 			ArrayList<Heap> heaps = new ArrayList<>(l.heaps.valueList());
 			StringBuilder builder = new StringBuilder();
 			ArrayList<HeapItem> scrolls = new ArrayList<>();
@@ -743,6 +781,157 @@ public class SeedFinder {
 			}
 		}
 		return true;
+	}
+
+	private static String levelEmojiMap(Level l){
+		StringBuilder emojiString = new StringBuilder();
+
+		int width = l.width();
+		int height = l.map.length / l.width();
+		int left = 0;
+		int right = width - 1;
+		int top = 0;
+		int bottom = height - 1;
+		int refTileLT = l.map[0];
+		int refTileRB = l.map[l.map.length-1];
+
+		while (left < width && isBorderColumn(l.map, left, width, height, refTileLT)) left++;
+		while (right >= 0 && isBorderColumn(l.map, right, width, height, refTileRB)) right--;
+		while (top < height && isBorderRow(l.map, top, width, refTileLT)) top++;
+		while (bottom >= 0 && isBorderRow(l.map, bottom, width, refTileRB)) bottom--;
+
+		top++; //seems to always get left over idk why
+
+		int newWidth = right - left + 1;
+		int newHeight = bottom - top + 1;
+
+		int offset = top * width + left;
+
+		int[] trimmedMap = trimMap(l.map, newWidth, newHeight, width, top, left);
+
+		for (int i = 0; i < trimmedMap.length; i++) {
+			if ( (i+1) % newWidth == 0) offset += left;
+			emojiString.append(getEmojiForTile(trimmedMap[i], i+offset, l));
+			if ((i + 1) % newWidth == 0) emojiString.append("\n");
+			if ( (i+1) % newWidth == 0) offset += (width-right) - 1;
+		}
+		return emojiString.toString();
+	}
+
+	public static int[] trimMap(int[] map, int newWidth, int newHeight, int width, int top,int left) {
+		int[] trimmedMap = new int[newWidth * newHeight];
+		for (int y = 0; y < newHeight; y++) {
+			for (int x = 0; x < newWidth; x++) {
+				trimmedMap[y * newWidth + x] = map[(top + y) * width + left + x];
+			}
+		}
+		return trimmedMap;
+	}
+	private static boolean isBorderColumn(int[] map, int col, int width, int height, int reftile) {
+		for (int y = 0; y < height; y++) if (map[y * width + col] != reftile) return false;
+		return true;
+
+	}
+	private static boolean isBorderRow(int[] map, int row, int width, int reftile) {
+		for (int x = 0; x < width; x++) if (map[row * width + x] != reftile) return false;
+		return true;
+	}
+
+
+	private static String getEmojiForTile(int tile, int origPos, Level l){
+
+		if (Options.renderEnemies){
+			Char ch = l.findMob(origPos);
+			if( ch != null && ch.alignment == Char.Alignment.ENEMY) return "\uD83D\uDCA2"; //angry jp
+		}
+
+		if (Options.renderItems){
+			Heap h = l.heaps.get(origPos);
+			if (h != null && h.items.peek() != null){
+				Item i = h.items.peek();
+				if (i instanceof Armor) return "\uD83D\uDC55"; //shirt
+				else if (i instanceof Artifact) return "\uD83E\uDDFF"; //
+				else if (i instanceof Bag) return "\uD83C\uDF92"; //backpack
+				else if (i instanceof Bomb) return "\uD83D\uDCA3"; //bomb
+				else if (i instanceof Food) return "\uD83C\uDF59"; //riceball
+				else if (i instanceof Key) {
+					if (i instanceof IronKey) return "\uD83D\uDCCE"; //paperclip, key is halfwidth (ow)
+					else if (i instanceof GoldenKey) return "\uD83D\uDD11"; //golden key
+					else if (i instanceof CrystalKey) return "\uD83D\uDC8E"; //crystal key
+					else return "\uD83D\uDCCE"; //paperclip again
+ 				}
+				else if (i instanceof Potion) return "\uD83E\uDDEA"; //vial
+				else if (i instanceof CeremonialCandle) return "\uD83E\uDE94"; //oil burner, candle non-emoji
+				else if (i instanceof Embers) return "\uD83D\uDD25"; //fire emoji. apparently the embers are always there. huh
+				else if (i instanceof CorpseDust) return "\uD83E\uDDB4"; //bone
+				else if (i instanceof Ring) return "\uD83D\uDC8D"; //ring
+				else if (i instanceof Scroll) return "\uD83D\uDCDC"; //scroll
+				else if (i instanceof Alchemize) return "\uD83D\uDCB2"; //dollar sign
+				else if (i instanceof Runestone) return "\uD83E\uDEA8"; //rock
+				else if (i instanceof TrinketCatalyst) return "\uD83C\uDFB2"; //die
+				else if (i instanceof Wand) return "\uD83E\uDE84"; //magic wand
+				else if (i instanceof Weapon) {
+					if (i instanceof MeleeWeapon) return "\uD83E\uDE93"; //axe, sword and knife emojis halfwidth
+					else if (i instanceof MissileWeapon) return "\uD83E\uDE83"; //boomerang
+				}
+				else if (i instanceof Ankh) return "\uD83C\uDFC6"; //trophy
+				else if (i instanceof Dewdrop) return "\uD83D\uDCA7"; //water drop
+				else if (i instanceof EnergyCrystal) return "\uD83E\uDEE7"; //bubbles
+				else if (i instanceof Gold) return "\uD83E\uDE99"; //coin
+				else if (i instanceof Honeypot) return "\uD83C\uDF6F"; //honeypot
+				else if (i instanceof Stylus) return "\uD83D\uDCDD"; //normal pen
+				else if (i instanceof Torch) return "\uD83D\uDD26"; //flashlight
+				else if (i instanceof Plant.Seed) return "\uD83E\uDED8"; //beans
+				else return "\uD83D\uDD23"; //various symbols
+
+
+			}
+		}
+
+		if (Options.renderTerrain) switch (tile){
+			case (Terrain.CHASM): return "\uD83D\uDD33️"; //white in black square (hole emoji breaks)
+			case (Terrain.EMPTY_DECO):
+			case (Terrain.CUSTOM_DECO):
+			case (Terrain.CUSTOM_DECO_EMPTY):
+			case (Terrain.EMPTY): return "⬛️";
+			case (Terrain.FURROWED_GRASS):
+			case (Terrain.GRASS): return "\uD83D\uDFE2️"; //green circle
+
+			case (Terrain.EMPTY_WELL): return "\uD83D\uDEB1️"; //no drinkable water
+			case (Terrain.WALL_DECO):
+			case (Terrain.WALL): return "⬜️";
+			case (Terrain.OPEN_DOOR):
+			case (Terrain.SECRET_DOOR):
+			case (Terrain.DOOR): return "\uD83D\uDEAA️"; //door
+			case (Terrain.ENTRANCE_SP):
+			case (Terrain.ENTRANCE): return "⏫";
+			case (Terrain.LOCKED_EXIT):
+			case (Terrain.UNLOCKED_EXIT):
+			case (Terrain.EXIT): return "⏬";
+			case (Terrain.EMBERS): return "\uD83D\uDFE7"; //orange square
+			case (Terrain.LOCKED_DOOR): return "\uD83D\uDD12️"; //lock
+			case (Terrain.CRYSTAL_DOOR): return "\uD83D\uDCD8️"; //blue book
+			case (Terrain.PEDESTAL): return "\uD83D\uDCE5"; //incoming symbol
+			case (Terrain.BARRICADE): return "\uD83E\uDEB5️"; //log emoji
+			case (Terrain.EMPTY_SP): return "\uD83D\uDFEB"; //brown square
+			case (Terrain.HIGH_GRASS): return "\uD83D\uDFE9"; //green square
+
+			case (Terrain.SECRET_TRAP):
+			case (Terrain.INACTIVE_TRAP):
+			case (Terrain.TRAP): return "\uD83D\uDFE5"; //red square
+
+			case (Terrain.WELL): return "\uD83D\uDEB0️"; //drinkable water
+			case (Terrain.BOOKSHELF): return "\uD83D\uDCDA️"; //stack of books
+			case (Terrain.ALCHEMY): return "\uD83E\uDED5"; //
+
+			case (Terrain.STATUE_SP):
+			case (Terrain.STATUE): return "\uD83D\uDDFF️"; //moai
+			case (Terrain.WATER): return "\uD83D\uDFE6"; //blue square
+			default:  return "❔️";
+		}
+
+		return (l.passable[origPos] ? "⬛️" : "⬜️");
+
 	}
 
 
