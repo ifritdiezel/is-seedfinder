@@ -800,8 +800,6 @@ public class SeedFinder {
 		while (top < height && isBorderRow(l.map, top, width, refTileLT)) top++;
 		while (bottom >= 0 && isBorderRow(l.map, bottom, width, refTileRB)) bottom--;
 
-		top++; //seems to always get left over idk why
-
 		int newWidth = right - left + 1;
 		int newHeight = bottom - top + 1;
 
