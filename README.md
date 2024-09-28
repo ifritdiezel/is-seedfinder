@@ -1,3 +1,10 @@
+# Headless-IS-Seedfinder 
+This project allows to run IS-Seedfinder over SSH.
+
+Link: [IS-Seedfinder](https://github.com/ifritdiezel/is-seedfinder)
+
+Original project README is given bellow.
+
 # IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
 
 Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).

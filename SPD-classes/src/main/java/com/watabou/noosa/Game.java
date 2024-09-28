@@ -98,8 +98,8 @@ public class Game implements ApplicationListener {
 		if (density == Float.POSITIVE_INFINITY){
 			density = 100f / 160f; //assume 100PPI if density can't be found
 		}
-		dispHeight = Gdx.graphics.getDisplayMode().height;
-		dispWidth = Gdx.graphics.getDisplayMode().width;
+		dispHeight =1;
+		dispWidth = 1;
 
 		inputHandler = new InputHandler( Gdx.input );
 		if (ControllerHandler.controllersSupported()){
@@ -155,6 +155,9 @@ public class Game implements ApplicationListener {
 
 	@Override
 	public void render() {
+		if (true) {
+			return;
+		}
 		//prevents weird rare cases where the app is running twice
 		if (instance != this){
 			finish();
