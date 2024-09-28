@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+set -o nounset
+
+usage() {
+    echo "Usage: $0 -m mode -i items"
+    echo
+    echo "Options:"
+    echo "  -h    Display this help message."
+    echo "  -f    Specify the floors."
+    echo "  -i    Specify the items."
+    echo "  -m    Specify the mode to run."
+    echo "  -s    Specify the starting seed."
+    exit 1
+}
+
+java_args=()
+
+while getopts ":h:f:i:m:s" opt; do
+  case $opt in
+    h)
+      usage
+      ;;
+    f)
+      floors="$OPTARG"
+      java_args+=("-floors" "$floors")
+      ;;
+    i)
+      items="$OPTARG"
+      printf "%s" "${items//, /$'\r'}" > /tmp/items.txt
+      java_args+=("-items" "/tmp/items.txt")
+      ;;
+    m)
+      mode="$OPTARG"
+      java_args+=("-mode" "$mode")
+      ;;
+    s)
+      seed="$OPTARG"
+      java_args+=("-seed" "$seed")
+      ;;
+    \?)
+      echo "Error: Invalid option -$OPTARG" >&2
+      usage
+      ;;
+    :)
+      echo "Error: Option -$OPTARG requires an argument." >&2
+      usage
+      ;;
+  esac
+done
+
+java -jar ./desktop.jar "${java_args[@]}"
