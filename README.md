@@ -1,10 +1,3 @@
-# Headless-IS-Seedfinder 
-This project allows to run IS-Seedfinder over SSH.
-
-Link: [IS-Seedfinder](https://github.com/ifritdiezel/is-seedfinder)
-
-Original project README is given bellow.
-
 # IS-Seedfinder (cloned from [alessiomarotta/shpd-seed-finder](https://github.com/alessiomarotta/shpd-seed-finder))
 
 Application to find seeds for Shattered Pixel Dungeon given constraints (e.g. wand of disintegration +2 and ring of evasion in the first 4 floors).
@@ -58,5 +51,5 @@ If you want to automatically stop seedfinder after enough seeds are found, use t
 Any valid seeds will be printed during the execution in the 9 letter code and numeric format.
 
 # How to build
-The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release. 
-A modified [patch](https://github.com/ifritdiezel/is-seedfinder/blob/master/is-seedfinder.patch) to apply to an existing project is also available in the root directory.
+The patch is already applied, see [Shattered PD desktop building instructions](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/docs/getting-started-desktop.md) to generate a release.
+
