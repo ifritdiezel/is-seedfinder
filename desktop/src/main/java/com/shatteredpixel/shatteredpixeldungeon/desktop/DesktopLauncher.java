@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.desktop;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.backends.headless.HeadlessApplication;
+import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3FileHandle;
@@ -188,7 +190,9 @@ public class DesktopLauncher {
 				"icons/icon_64.png", "icons/icon_128.png", "icons/icon_256.png");
 
 		config.setInitialVisible(false);
-		new Lwjgl3Application(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config);
+		//new Lwjgl3Application(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config);
+		final HeadlessApplicationConfiguration config2 = new HeadlessApplicationConfiguration();
+		new HeadlessApplication(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config2);
 
 		new SeedFinder(args);
 	}
