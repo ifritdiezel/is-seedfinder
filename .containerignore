@@ -1,0 +1,12 @@
+*
+!LICENSE.txt
+!SPD-classes
+!build.gradle
+!core
+!desktop
+!gradle
+!gradle.properties
+!gradlew
+!services
+!settings.gradle
+!entrypoint
