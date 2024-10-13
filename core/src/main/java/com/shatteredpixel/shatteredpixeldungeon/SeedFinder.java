@@ -83,7 +83,7 @@ public class SeedFinder {
 	enum Condition {ANY, ALL};
 	enum Mode {SCAN, FIND, TEST}
 
-
+	boolean DEMO = false;
 
 	public static class Options {
 		public static Mode mode;
@@ -169,14 +169,27 @@ public class SeedFinder {
 			System.out.println("Parsing failed.  Reason: " + exp.getMessage());
 		}
 
-		if (args.length == 0){
-			System.out.println("(ignore the warnings above)");
-			formatter.printHelp("is-seedfinder", options);
-			System.out.println("usage example: java -jar seedfinder.jar -mode find -items in.txt");
-			System.exit(1);
-		}
-
 		assert line != null;
+
+		if (args.length == 0){
+            if (DEMO) {
+                Options.mode = Mode.FIND;
+                Options.condition = Condition.ALL;
+				Options.floors = 9;
+                Options.outputFile = "out.txt";
+                Options.itemListFile = "in.txt";
+                Options.startingSeed = 0;
+                Options.endingSeed = 100000;
+                Options.renderMinimap = false;
+                return;
+            } else {
+                System.out.println("(ignore the warnings above)");
+                formatter.printHelp("is-seedfinder", options);
+                System.out.println("usage example: java -jar seedfinder.jar -mode find -items in.txt");
+                System.exit(1);
+            }
+        }
+
 		String mode = line.getOptionValue("mode").toLowerCase();
 			switch (mode){
 				case "find":
@@ -634,7 +647,7 @@ public class SeedFinder {
 			}
 
 			out.printf("=== floor %d ===\n" + (Options.compactOutput ? "":"\n"), Dungeon.depth);
-			if (l.feeling != Level.Feeling.NONE) {
+			if (l.feeling != Level.Feeling.NONE && Options.renderMinimap) {
 				out.printf("Feeling: " + l.feeling.title());
 				out.printf("\n");
 			}
